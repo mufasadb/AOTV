@@ -3,8 +3,6 @@ import {
   Typography, 
   Card, 
   CardContent, 
-  Button, 
-  LinearProgress,
   Avatar,
   Chip,
   Divider
@@ -17,33 +15,40 @@ import {
   LocalFireDepartment,
   Visibility
 } from '@mui/icons-material'
+import { useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
 import { getWeaponIcon, getArmorIcon, getMedievalIcon } from '../utils/iconHelper'
+import { combatStore, type CombatStats } from '../stores/CombatStore'
+import RpgProgressBar from './RpgProgressBar'
+import RpgButton from './RpgButton'
+import RpgItemSlot from './RpgItemSlot'
+import FloatingDamage from './FloatingDamage'
 
-// Mock enemy data
-const mockEnemies = [
-  { id: 1, name: 'Goblin Warrior', hp: 45, maxHp: 60, position: 'back', intent: 'attack' },
-  { id: 2, name: 'Orc Berserker', hp: 80, maxHp: 120, position: 'front', intent: 'block' },
-  { id: 3, name: 'Dark Mage', hp: 30, maxHp: 40, position: 'back', intent: 'spell' },
-]
-
-// Mock player data  
-const mockPlayer = {
-  hp: 85,
-  maxHp: 100,
-  mp: 25,
-  maxMp: 50,
-  es: 15,
-  maxEs: 20,
-  armor: 12,
-  dodge: 8,
-  damage: '15-22',
+// Mock player equipment for display
+const mockPlayerEquipment = {
   weapon: 'Iron Sword',
   shield: 'Wooden Shield',
   helmet: 'Leather Cap',
   chest: 'Chain Mail',
 }
 
-const EnemySlot = ({ enemy, position }: { enemy?: typeof mockEnemies[0], position: { x: number, y: number } }) => {
+interface CombatViewProps {
+  onNavigateToTown: () => void
+}
+
+const EnemySlot = ({ 
+  enemy, 
+  position, 
+  isSelected, 
+  onSelect,
+  animationState 
+}: { 
+  enemy?: { id: string | number, name: string, hp: number, maxHp: number, position: string, intent: string }, 
+  position: { x: number, y: number },
+  isSelected: boolean,
+  onSelect: () => void,
+  animationState: 'idle' | 'hit' | 'attacking' | 'returning'
+}) => {
   const getIntentIcon = (intent?: string) => {
     switch (intent) {
       case 'attack': return <Attack sx={{ fontSize: 16, color: 'error.main' }} />
@@ -66,20 +71,32 @@ const EnemySlot = ({ enemy, position }: { enemy?: typeof mockEnemies[0], positio
     return enemyIconMap[name] || getMedievalIcon('warrior');
   }
 
+  const getAnimationTransform = () => {
+    const baseTransform = 'translate(-50%, -50%)'
+    switch (animationState) {
+      case 'hit':
+        return `${baseTransform} translateY(-15px)` // Bounce backward (up/away from player)
+      case 'attacking':
+        return `${baseTransform} translateY(10px)` // Jut forward (down/towards player)
+      default:
+        return baseTransform
+    }
+  }
+
   return (
     <Box
       sx={{
         position: 'absolute',
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: 'translate(-50%, -50%)',
+        transform: getAnimationTransform(),
         cursor: enemy ? 'pointer' : 'default',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.3s ease-out',
         '&:hover': enemy ? {
-          transform: 'translate(-50%, -50%) scale(1.05)',
           filter: 'brightness(1.2)',
         } : {},
       }}
+      onClick={enemy ? onSelect : undefined}
     >
       {enemy ? (
         <Box sx={{ textAlign: 'center' }}>
@@ -96,13 +113,18 @@ const EnemySlot = ({ enemy, position }: { enemy?: typeof mockEnemies[0], positio
               height: 64,
               backgroundColor: getEnemyImage(enemy.name) ? 'transparent' : '#8B4513',
               border: '3px solid',
-              borderColor: 'primary.main',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+              borderColor: isSelected ? 'warning.main' : 'primary.main',
+              boxShadow: isSelected 
+                ? '0 0 20px rgba(255, 193, 7, 0.8), 0 4px 12px rgba(0,0,0,0.4)'
+                : '0 4px 12px rgba(0,0,0,0.4)',
               fontSize: '0.75rem',
               fontWeight: 'bold',
+              outline: isSelected ? '2px solid' : 'none',
+              outlineColor: 'warning.main',
+              outlineOffset: '2px',
             }}
           >
-            {!getEnemyImage(enemy.name) && enemy.name.split(' ').map(word => word[0]).join('')}
+            {!getEnemyImage(enemy.name) && enemy.name.split(' ').map((word: string) => word[0]).join('')}
           </Avatar>
           
           {/* HP Bar */}
@@ -110,18 +132,12 @@ const EnemySlot = ({ enemy, position }: { enemy?: typeof mockEnemies[0], positio
             <Typography variant="caption" sx={{ fontSize: '0.7rem', fontWeight: 'bold' }}>
               {enemy.name}
             </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={(enemy.hp / enemy.maxHp) * 100}
-              sx={{
-                height: 6,
-                borderRadius: 3,
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                '& .MuiLinearProgress-bar': {
-                  backgroundColor: enemy.hp > enemy.maxHp * 0.6 ? 'success.main' : 
-                                  enemy.hp > enemy.maxHp * 0.3 ? 'warning.main' : 'error.main',
-                }
-              }}
+            <RpgProgressBar
+              value={enemy.hp}
+              maxValue={enemy.maxHp}
+              type="health"
+              width={80}
+              height={8}
             />
             <Typography variant="caption" sx={{ fontSize: '0.6rem' }}>
               {enemy.hp}/{enemy.maxHp}
@@ -150,7 +166,85 @@ const EnemySlot = ({ enemy, position }: { enemy?: typeof mockEnemies[0], positio
   )
 }
 
-const CombatView = () => {
+const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
+  // Initialize combat if not already started
+  useEffect(() => {
+    if (!combatStore.isInCombat) {
+      // Mock player stats
+      const playerStats: CombatStats = {
+        hp: 85,
+        maxHp: 100,
+        mp: 25,
+        maxMp: 50,
+        es: 15,
+        maxEs: 20,
+        armor: 12,
+        fireRes: 10,
+        lightningRes: 5,
+        iceRes: 8,
+        darkRes: 15,
+        dodge: 8,
+        block: 15,
+        critChance: 15,
+        critMultiplier: 1.5,
+        damage: 18,
+        damageType: 'physical'
+      }
+
+      // Mock enemy data with proper stats
+      const enemyData = [
+        {
+          name: 'Goblin Warrior',
+          stats: {
+            hp: 45, maxHp: 60, mp: 10, maxMp: 10, es: 0, maxEs: 0,
+            armor: 5, fireRes: 0, lightningRes: 0, iceRes: 0, darkRes: 5,
+            dodge: 12, block: 0, critChance: 8, critMultiplier: 1.3,
+            damage: 12, damageType: 'physical' as const
+          }
+        },
+        {
+          name: 'Orc Berserker',
+          stats: {
+            hp: 80, maxHp: 120, mp: 5, maxMp: 5, es: 0, maxEs: 0,
+            armor: 8, fireRes: 5, lightningRes: 0, iceRes: 0, darkRes: 0,
+            dodge: 4, block: 0, critChance: 12, critMultiplier: 1.6,
+            damage: 22, damageType: 'physical' as const
+          }
+        },
+        {
+          name: 'Dark Mage',
+          stats: {
+            hp: 30, maxHp: 40, mp: 40, maxMp: 50, es: 20, maxEs: 25,
+            armor: 2, fireRes: 10, lightningRes: 15, iceRes: 5, darkRes: 25,
+            dodge: 15, block: 0, critChance: 10, critMultiplier: 1.4,
+            damage: 16, damageType: 'dark' as const
+          }
+        }
+      ]
+
+      combatStore.startCombat(playerStats, enemyData)
+    }
+  }, [])
+
+  // Handle combat end states
+  useEffect(() => {
+    if (combatStore.turnPhase === 'victory') {
+      // Show reward modal after a delay
+      setTimeout(() => {
+        const result = combatStore.nextFight()
+        if (result === 'dungeon_complete') {
+          onNavigateToTown()
+        }
+      }, 2000)
+    } else if (combatStore.turnPhase === 'defeat') {
+      // Apply death penalty and return to town
+      setTimeout(() => {
+        combatStore.applyDeathPenalty()
+        combatStore.endCombat()
+        onNavigateToTown()
+      }, 2000)
+    }
+  }, [combatStore.turnPhase, onNavigateToTown])
   // Enemy positions (from player perspective - enemies are across from us)
   const enemyPositions = [
     { x: 30, y: 25 }, // Back left
@@ -219,20 +313,43 @@ const CombatView = () => {
           }}
         >
           {enemyPositions.map((position, index) => {
-            // Assign enemies to specific positions
-            let enemy;
-            if (index === 0) enemy = mockEnemies.find(e => e.id === 1) // Goblin Warrior
-            if (index === 1) enemy = mockEnemies.find(e => e.id === 3) // Dark Mage  
-            if (index === 3) enemy = mockEnemies.find(e => e.id === 2) // Orc Berserker
+            // Map combat store enemies to positions
+            const enemy = combatStore.enemies[index]
             
             return (
               <EnemySlot
                 key={index}
-                enemy={enemy}
+                enemy={enemy ? {
+                  id: enemy.id,
+                  name: enemy.name,
+                  hp: enemy.stats.hp,
+                  maxHp: enemy.stats.maxHp,
+                  position: 'back',
+                  intent: enemy.intent || 'attack'
+                } : undefined}
                 position={position}
+                isSelected={enemy ? combatStore.selectedTargetId === enemy.id : false}
+                onSelect={() => enemy && combatStore.selectTarget(enemy.id)}
+                animationState={enemy ? combatStore.enemyAnimations[enemy.id] || 'idle' : 'idle'}
               />
             )
           })}
+          
+          {/* Floating Damage Numbers */}
+          {combatStore.floatingDamages.map((damage) => (
+            <FloatingDamage
+              key={damage.id}
+              damage={damage.damage}
+              isCrit={damage.isCrit}
+              isDodged={damage.isDodged}
+              isBlocked={damage.isBlocked}
+              position={{
+                x: `${damage.position.x}%`,
+                y: `${damage.position.y}%`
+              }}
+              onComplete={() => combatStore.removeFloatingDamage(damage.id)}
+            />
+          ))}
         </Box>
 
         {/* Player Action Bar */}
@@ -247,35 +364,48 @@ const CombatView = () => {
           }}
         >
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mb: 2 }}>
-            <Button 
-              variant="contained" 
-              size="large" 
+            <RpgButton 
+              size="large"
+              variant="primary"
               startIcon={<Attack />}
-              disabled
-              sx={{ px: 4 }}
+              disabled={combatStore.turnPhase !== 'player' || !combatStore.selectedTargetId || combatStore.isProcessingTurn}
+              onClick={() => combatStore.playerAttack()}
             >
               Attack
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="large" 
+            </RpgButton>
+            <RpgButton 
+              size="large"
+              variant="secondary"
               startIcon={<Shield />}
-              disabled
-              sx={{ px: 4 }}
+              disabled={combatStore.turnPhase !== 'player' || combatStore.isProcessingTurn}
+              onClick={() => combatStore.playerBlock()}
             >
               Block
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="large" 
+            </RpgButton>
+            <RpgButton 
+              size="large"
+              variant="secondary"
               disabled
-              sx={{ px: 3 }}
             >
               Abilities
-            </Button>
+            </RpgButton>
           </Box>
+          
+          {/* Turn indicator and combat feedback */}
+          <Box sx={{ textAlign: 'center', mb: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {combatStore.turnPhase === 'player' ? '🗡️ Your Turn' : 
+               combatStore.turnPhase === 'enemy' ? '⚔️ Enemy Turn' :
+               combatStore.turnPhase === 'victory' ? '🎉 Victory!' :
+               combatStore.turnPhase === 'defeat' ? '💀 Defeat' : ''}
+            </Typography>
+            <Typography variant="caption" display="block" sx={{ opacity: 0.8 }}>
+              Fight {combatStore.currentFight} of {combatStore.totalFights}
+            </Typography>
+          </Box>
+          
           <Typography variant="caption" display="block" sx={{ textAlign: 'center', opacity: 0.7 }}>
-            Click an enemy to target • Turn-based combat system
+            Click an enemy to target • {combatStore.selectedTargetId ? 'Target selected' : 'No target'}
           </Typography>
         </Box>
       </Box>
@@ -295,16 +425,16 @@ const CombatView = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                   <Favorite sx={{ fontSize: 16, color: 'error.main' }} />
                   <Typography variant="body2" fontWeight="bold">Health</Typography>
-                  <Typography variant="caption">{mockPlayer.hp}/{mockPlayer.maxHp}</Typography>
+                  <Typography variant="caption">
+                    {combatStore.player?.stats.hp || 0}/{combatStore.player?.stats.maxHp || 0}
+                  </Typography>
                 </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={(mockPlayer.hp / mockPlayer.maxHp) * 100}
-                  sx={{
-                    height: 8,
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    '& .MuiLinearProgress-bar': { backgroundColor: 'error.main' }
-                  }}
+                <RpgProgressBar
+                  value={combatStore.player?.stats.hp || 0}
+                  maxValue={combatStore.player?.stats.maxHp || 1}
+                  type="health"
+                  width={280}
+                  height={12}
                 />
               </Box>
 
@@ -313,16 +443,16 @@ const CombatView = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                   <Psychology sx={{ fontSize: 16, color: 'info.main' }} />
                   <Typography variant="body2" fontWeight="bold">Mana</Typography>
-                  <Typography variant="caption">{mockPlayer.mp}/{mockPlayer.maxMp}</Typography>
+                  <Typography variant="caption">
+                    {combatStore.player?.stats.mp || 0}/{combatStore.player?.stats.maxMp || 0}
+                  </Typography>
                 </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={(mockPlayer.mp / mockPlayer.maxMp) * 100}
-                  sx={{
-                    height: 8,
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    '& .MuiLinearProgress-bar': { backgroundColor: 'info.main' }
-                  }}
+                <RpgProgressBar
+                  value={combatStore.player?.stats.mp || 0}
+                  maxValue={combatStore.player?.stats.maxMp || 1}
+                  type="mana"
+                  width={280}
+                  height={12}
                 />
               </Box>
 
@@ -331,16 +461,16 @@ const CombatView = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                   <LocalFireDepartment sx={{ fontSize: 16, color: 'warning.main' }} />
                   <Typography variant="body2" fontWeight="bold">Energy Shield</Typography>
-                  <Typography variant="caption">{mockPlayer.es}/{mockPlayer.maxEs}</Typography>
+                  <Typography variant="caption">
+                    {combatStore.player?.stats.es || 0}/{combatStore.player?.stats.maxEs || 0}
+                  </Typography>
                 </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={(mockPlayer.es / mockPlayer.maxEs) * 100}
-                  sx={{
-                    height: 8,
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    '& .MuiLinearProgress-bar': { backgroundColor: 'warning.main' }
-                  }}
+                <RpgProgressBar
+                  value={combatStore.player?.stats.es || 0}
+                  maxValue={combatStore.player?.stats.maxEs || 1}
+                  type="energy"
+                  width={280}
+                  height={12}
                 />
               </Box>
             </Box>
@@ -350,9 +480,39 @@ const CombatView = () => {
             {/* Combat Stats */}
             <Typography variant="subtitle2" gutterBottom>Combat Stats</Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-              <Chip icon={<Shield />} label={`Armor: ${mockPlayer.armor}`} size="small" />
-              <Chip icon={<Visibility />} label={`Dodge: ${mockPlayer.dodge}%`} size="small" />
-              <Chip icon={<Attack />} label={`Damage: ${mockPlayer.damage}`} size="small" />
+              <Chip icon={<Shield />} label={`Armor: ${combatStore.player?.stats.armor || 0}`} size="small" />
+              <Chip icon={<Visibility />} label={`Dodge: ${combatStore.player?.stats.dodge || 0}%`} size="small" />
+              <Chip icon={<Attack />} label={`Damage: ${combatStore.player?.stats.damage || 0}`} size="small" />
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            {/* Combat Log */}
+            <Typography variant="subtitle2" gutterBottom>Combat Log</Typography>
+            <Box sx={{ 
+              height: 120, 
+              overflow: 'auto', 
+              border: '1px solid', 
+              borderColor: 'divider', 
+              borderRadius: 1, 
+              p: 1,
+              mb: 2,
+              backgroundColor: 'rgba(0,0,0,0.2)'
+            }}>
+              {combatStore.combatLog.map((message, index) => (
+                <Typography 
+                  key={index} 
+                  variant="caption" 
+                  display="block" 
+                  sx={{ 
+                    mb: 0.5, 
+                    fontSize: '0.7rem',
+                    opacity: index === combatStore.combatLog.length - 1 ? 1 : 0.7
+                  }}
+                >
+                  {message}
+                </Typography>
+              ))}
             </Box>
 
             <Divider sx={{ my: 2 }} />
@@ -360,77 +520,63 @@ const CombatView = () => {
             {/* Equipment */}
             <Typography variant="subtitle2" gutterBottom>Equipment</Typography>
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
-                <Box sx={{ textAlign: 'center', p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                  <Box
-                    component="img"
-                    src={getWeaponIcon('sword', 15)}
-                    alt="weapon"
-                    sx={{ width: 32, height: 32, mb: 0.5, objectFit: 'contain' }}
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <RpgItemSlot
+                    item={{
+                      name: mockPlayerEquipment.weapon,
+                      icon: getWeaponIcon('sword', 15),
+                      rarity: 'uncommon'
+                    }}
+                    slotType="melee"
+                    size={48}
                   />
-                  <Typography variant="caption" display="block">Weapon</Typography>
-                  <Typography variant="body2" fontWeight="bold" fontSize="0.7rem">{mockPlayer.weapon}</Typography>
+                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Weapon</Typography>
                 </Box>
-                <Box sx={{ textAlign: 'center', p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                  <Box
-                    component="img"
-                    src={getWeaponIcon('shield', 25)}
-                    alt="shield"
-                    sx={{ width: 32, height: 32, mb: 0.5, objectFit: 'contain' }}
+                <Box sx={{ textAlign: 'center' }}>
+                  <RpgItemSlot
+                    item={{
+                      name: mockPlayerEquipment.shield,
+                      icon: getWeaponIcon('shield', 25),
+                      rarity: 'common'
+                    }}
+                    slotType="shield"
+                    size={48}
                   />
-                  <Typography variant="caption" display="block">Shield</Typography>
-                  <Typography variant="body2" fontWeight="bold" fontSize="0.7rem">{mockPlayer.shield}</Typography>
+                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Shield</Typography>
                 </Box>
-                <Box sx={{ textAlign: 'center', p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                  <Box
-                    component="img"
-                    src={getArmorIcon('helmet', 12)}
-                    alt="helmet"
-                    sx={{ width: 32, height: 32, mb: 0.5, objectFit: 'contain' }}
+                <Box sx={{ textAlign: 'center' }}>
+                  <RpgItemSlot
+                    item={{
+                      name: mockPlayerEquipment.helmet,
+                      icon: getArmorIcon('helmet', 12),
+                      rarity: 'rare'
+                    }}
+                    slotType="head"
+                    size={48}
                   />
-                  <Typography variant="caption" display="block">Helmet</Typography>
-                  <Typography variant="body2" fontWeight="bold" fontSize="0.7rem">{mockPlayer.helmet}</Typography>
+                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Helmet</Typography>
                 </Box>
-                <Box sx={{ textAlign: 'center', p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                  <Box
-                    component="img"
-                    src={getArmorIcon('chest', 8)}
-                    alt="chest"
-                    sx={{ width: 32, height: 32, mb: 0.5, objectFit: 'contain' }}
+                <Box sx={{ textAlign: 'center' }}>
+                  <RpgItemSlot
+                    item={{
+                      name: mockPlayerEquipment.chest,
+                      icon: getArmorIcon('chest', 8),
+                      rarity: 'uncommon'
+                    }}
+                    slotType="chest"
+                    size={48}
                   />
-                  <Typography variant="caption" display="block">Chest</Typography>
-                  <Typography variant="body2" fontWeight="bold" fontSize="0.7rem">{mockPlayer.chest}</Typography>
+                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Chest</Typography>
                 </Box>
               </Box>
             </Box>
 
-            {/* Quick Inventory */}
-            <Typography variant="subtitle2" gutterBottom>Quick Items</Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1 }}>
-              {[1, 2, 3, 4].map((slot) => (
-                <Box
-                  key={slot}
-                  sx={{
-                    aspectRatio: '1',
-                    border: '2px dashed',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.7rem',
-                    color: 'text.disabled',
-                  }}
-                >
-                  {slot}
-                </Box>
-              ))}
-            </Box>
           </CardContent>
         </Card>
       </Box>
     </Box>
   )
-}
+})
 
 export default CombatView

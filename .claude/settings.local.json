@@ -11,7 +11,17 @@
       "WebFetch(domain:game-icons.net)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Bash(git remote add:*)",
+      "Bash(npm test:*)",
+      "Bash(pkill:*)",
+      "Bash(npm run test:*)",
+      "Bash(curl:*)",
+      "Bash(npm run preview:*)",
+      "Bash(npm start)",
+      "Bash(npx vite:*)"
     ],
     "deny": []
   }

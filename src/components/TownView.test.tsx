@@ -14,12 +14,12 @@ const renderWithTheme = (component: React.ReactElement) => {
 
 describe('TownView', () => {
   it('renders the town title', () => {
-    renderWithTheme(<TownView />)
+    renderWithTheme(<TownView onNavigateToCombat={() => {}} />)
     expect(screen.getByText("Adventurer's Haven")).toBeInTheDocument()
   })
 
   it('displays main town area sections', () => {
-    renderWithTheme(<TownView />)
+    renderWithTheme(<TownView onNavigateToCombat={() => {}} />)
     expect(screen.getByText('Stash')).toBeInTheDocument()
     expect(screen.getByText('Crafting Bench')).toBeInTheDocument()
     expect(screen.getByText('Dungeon Portal')).toBeInTheDocument()
@@ -29,14 +29,14 @@ describe('TownView', () => {
   })
 
   it('displays player information panel', () => {
-    renderWithTheme(<TownView />)
+    renderWithTheme(<TownView onNavigateToCombat={() => {}} />)
     expect(screen.getByText('Adventurer')).toBeInTheDocument()
     expect(screen.getByText('Level 12')).toBeInTheDocument()
     expect(screen.getByText(/2450 Gold/)).toBeInTheDocument()
   })
 
   it('displays inventory tabs', () => {
-    renderWithTheme(<TownView />)
+    renderWithTheme(<TownView onNavigateToCombat={() => {}} />)
     expect(screen.getByRole('tab', { name: /Items/ })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /Stats/ })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /Materials/ })).toBeInTheDocument()
@@ -44,10 +44,10 @@ describe('TownView', () => {
   })
 
   it('shows equipment slots by default', () => {
-    renderWithTheme(<TownView />)
+    renderWithTheme(<TownView onNavigateToCombat={() => {}} />)
     expect(screen.getByText('Equipment Slots')).toBeInTheDocument()
-    expect(screen.getByText('Weapon')).toBeInTheDocument()
-    expect(screen.getByText('Shield')).toBeInTheDocument()
+    expect(screen.getAllByText('Weapon')).toHaveLength(2) // One in old layout, one in CharacterDoll
+    expect(screen.getAllByText('Shield')).toHaveLength(2) // One in old layout, one in CharacterDoll
     expect(screen.getByText('Helmet')).toBeInTheDocument()
   })
 })

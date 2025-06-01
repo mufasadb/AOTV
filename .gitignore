@@ -25,3 +25,6 @@ dist-ssr
 
 # Game Assets - Large icon collection (6000+ files)
 public/5000FantasyIcons/
+
+# RPG UI Assets - Classic RPG GUI elements
+public/Classic_RPG_GUI/

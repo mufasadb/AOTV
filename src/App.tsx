@@ -19,14 +19,22 @@ const App = observer(() => {
     setCurrentView(newValue)
   }
 
+  const navigateToCombat = () => {
+    setCurrentView(1)
+  }
+
+  const navigateToTown = () => {
+    setCurrentView(0)
+  }
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 0:
-        return <TownView />
+        return <TownView onNavigateToCombat={navigateToCombat} />
       case 1:
-        return <CombatView />
+        return <CombatView onNavigateToTown={navigateToTown} />
       default:
-        return <TownView />
+        return <TownView onNavigateToCombat={navigateToCombat} />
     }
   }
 

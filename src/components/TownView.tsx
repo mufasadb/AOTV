@@ -3,7 +3,6 @@ import {
   Typography, 
   Card, 
   CardContent, 
-  Button, 
   Tabs, 
   Tab,
   Avatar,
@@ -14,12 +13,16 @@ import {
   Assessment, 
   Build, 
   VpnKey,
-  Store,
-  Explore,
   Person
 } from '@mui/icons-material'
 import { useState } from 'react'
-import { getProfessionIcon, getWeaponIcon, getArmorIcon, getLootIcon } from '../utils/iconHelper'
+import { observer } from 'mobx-react-lite'
+import { getProfessionIcon, getLootIcon } from '../utils/iconHelper'
+import RpgButton from './RpgButton'
+import EnhancedDragDrop from './EnhancedDragDrop'
+import EnhancedInventory from './EnhancedInventory'
+import CharacterDoll from './CharacterDoll'
+import StashOverlay from './StashOverlay'
 
 const mockPlayerData = {
   name: 'Adventurer',
@@ -33,8 +36,13 @@ const mockPlayerData = {
   craftingMats: 18,
 }
 
-const TownView = () => {
+interface TownViewProps {
+  onNavigateToCombat: () => void
+}
+
+const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
   const [activeTab, setActiveTab] = useState(0)
+  const [stashOpen, setStashOpen] = useState(false)
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -76,30 +84,13 @@ const TownView = () => {
               ))}
             </Box>
             
-            <Typography variant="subtitle2" gutterBottom>Backpack</Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1 }}>
-              {Array.from({ length: 18 }).map((_, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    aspectRatio: '1',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.6rem',
-                    color: 'text.disabled',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255,255,255,0.05)',
-                    }
-                  }}
-                >
-                  {index < 3 ? '🗡️' : ''}
-                </Box>
-              ))}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ flex: 1 }}>
+                <CharacterDoll />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <EnhancedInventory />
+              </Box>
             </Box>
           </Box>
         )
@@ -185,7 +176,7 @@ const TownView = () => {
                       Tier {index + 1} • {['Easy', 'Medium', 'Hard'][index]} difficulty
                     </Typography>
                   </Box>
-                  <Button size="small" variant="outlined">Use</Button>
+                  <RpgButton size="small">Use</RpgButton>
                 </Box>
               ))}
             </Box>
@@ -197,7 +188,8 @@ const TownView = () => {
   }
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex' }}>
+    <EnhancedDragDrop>
+      <Box sx={{ height: '100vh', display: 'flex' }}>
       {/* Main Town Area */}
       <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         {/* Town Background */}
@@ -240,7 +232,7 @@ const TownView = () => {
               <CardContent sx={{ textAlign: 'center', p: 3 }}>
                 <Box
                   component="img"
-                  src={getLootIcon(25)}
+                  src={getLootIcon(101)}
                   alt="stash"
                   sx={{ width: 48, height: 48, mb: 2, objectFit: 'contain' }}
                 />
@@ -248,9 +240,9 @@ const TownView = () => {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Store and organize your valuable items and equipment
                 </Typography>
-                <Button variant="contained" fullWidth>
+                <RpgButton fullWidth onClick={() => setStashOpen(true)}>
                   Open Stash
-                </Button>
+                </RpgButton>
               </CardContent>
             </Card>
 
@@ -259,7 +251,7 @@ const TownView = () => {
               <CardContent sx={{ textAlign: 'center', p: 3 }}>
                 <Box
                   component="img"
-                  src={getProfessionIcon('blacksmith', 15)}
+                  src={getProfessionIcon('blacksmith', 27)}
                   alt="crafting"
                   sx={{ width: 48, height: 48, mb: 2, objectFit: 'contain' }}
                 />
@@ -267,9 +259,9 @@ const TownView = () => {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Forge and enhance equipment with your materials
                 </Typography>
-                <Button variant="contained" fullWidth>
+                <RpgButton fullWidth>
                   Start Crafting
-                </Button>
+                </RpgButton>
               </CardContent>
             </Card>
 
@@ -278,7 +270,7 @@ const TownView = () => {
               <CardContent sx={{ textAlign: 'center', p: 3 }}>
                 <Box
                   component="img"
-                  src={getLootIcon(67)}
+                  src={getLootIcon(54)}
                   alt="portal"
                   sx={{ width: 48, height: 48, mb: 2, objectFit: 'contain' }}
                 />
@@ -286,9 +278,9 @@ const TownView = () => {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Enter dangerous dungeons to find treasure and glory
                 </Typography>
-                <Button variant="contained" fullWidth color="error">
+                <RpgButton fullWidth variant="danger" onClick={onNavigateToCombat}>
                   Enter Dungeon
-                </Button>
+                </RpgButton>
               </CardContent>
             </Card>
           </Box>
@@ -340,8 +332,12 @@ const TownView = () => {
           </CardContent>
         </Card>
       </Box>
-    </Box>
+
+      {/* Stash Overlay */}
+      <StashOverlay open={stashOpen} onClose={() => setStashOpen(false)} />
+      </Box>
+    </EnhancedDragDrop>
   )
-}
+})
 
 export default TownView

@@ -432,6 +432,127 @@
           "examples": ["ShieldWall.png", "Phalanx.png", "Cavalry.png"]
         }
       }
+    },
+    "ClassicRpgGui": {
+      "totalFiles": 150,
+      "description": "Professional RPG user interface elements and components",
+      "subcategories": {
+        "Icons": {
+          "totalFiles": 16,
+          "description": "Navigation and action icons for RPG interfaces",
+          "icons": {
+            "Bag.png": "Inventory/storage icon",
+            "Equip.png": "Equipment management icon", 
+            "Fight.png": "Combat/battle icon",
+            "Honor.png": "Achievement/honor system icon",
+            "Inventory.png": "Item management icon",
+            "Menu.png": "Main menu navigation icon",
+            "Options.png": "Settings/preferences icon",
+            "Profession.png": "Skills/professions icon",
+            "Quest.png": "Quest log/missions icon",
+            "Scull.png": "Death/danger indicator",
+            "Scull2.png": "Alternative death/danger indicator",
+            "exit.png": "Exit/close interface icon",
+            "greed.png": "Loot/treasure desire icon",
+            "need.png": "Required items indicator",
+            "runes.png": "Magic/enchantment icon",
+            "skills.png": "Skill tree/abilities icon",
+            "trade.png": "Trading/commerce icon"
+          }
+        },
+        "Parts": {
+          "totalFiles": 81,
+          "description": "UI frames, bars, buttons and interface components",
+          "components": {
+            "frames": {
+              "Hero_icon_frame.png": "Standard character portrait frame",
+              "Hero_icon_frame_bg.png": "Background for character portraits",
+              "Hero_icon_frame_elite.png": "Elite/special character frame",
+              "Hero_icon_frame_rare.png": "Rare quality character frame",
+              "inventory_frame.png": "Main inventory window frame",
+              "inventory_frame_little.png": "Small item slot frame",
+              "dialoge_frame.png": "Dialog/conversation window frame",
+              "info_window.png": "Information popup window",
+              "scroll_frame.png": "Scrollable content frame"
+            },
+            "bars": {
+              "Hp_line.png": "Health bar fill",
+              "Hp_line2.png": "Alternative health bar style",
+              "Mana_line.png": "Mana bar fill", 
+              "Mana_line2.png": "Alternative mana bar style",
+              "energy_line.png": "Energy bar fill",
+              "Venom_line.png": "Poison/venom status bar",
+              "xp_line.png": "Experience bar fill",
+              "basic_bar.png": "Generic progress bar",
+              "skill_bar.png": "Skill progress bar"
+            },
+            "buttons": {
+              "long_button.png": "Standard long button",
+              "long_button_on.png": "Long button active state",
+              "long_button_off.png": "Long button disabled state",
+              "mid_button.png": "Medium sized button",
+              "mid_button_on.png": "Medium button active state", 
+              "mid_button_off.png": "Medium button disabled state",
+              "mini_button.png": "Small utility button",
+              "inventory_button.png": "Inventory action button",
+              "option_button.png": "Settings option button"
+            },
+            "arrows": {
+              "Mini_arrow_top.png": "Up navigation arrow",
+              "Mini_arrow_bot.png": "Down navigation arrow", 
+              "Mini_arrow_left2.png": "Left navigation arrow",
+              "Mini_arrow_right2.png": "Right navigation arrow"
+            },
+            "utility": {
+              "Plus.png": "Add/increase icon",
+              "Minus.png": "Remove/decrease icon",
+              "Mini_exit.png": "Small close button",
+              "Mini_help.png": "Help/info button",
+              "Paper_01.png": "Document/scroll background",
+              "minimap.png": "Minimap frame"
+            }
+          }
+        },
+        "Silhouette": {
+          "totalFiles": 14,
+          "description": "Character class silhouettes for avatars and portraits",
+          "classes": {
+            "Mage": ["Mage_silhouette_man.png", "Mage_silhouette_woman.png"],
+            "Archer": ["archer_silhouette_man.png", "archer_silhouette_woman.png"],
+            "Assassin": ["assassin_silhouette_man.png", "assassin_silhouette_woman.png"], 
+            "Berserk": ["berserk_silhouette_man.png", "berserk_silhouette_woman.png"],
+            "Druid": ["druid_silhouette_man.png", "druid_silhouette_woman.png"],
+            "Shadow Mage": ["shadowmage_silhouette_man.png", "shadowmage_silhouette_woman.png"],
+            "Warrior": ["warrior_silhouette_man.png", "warrior_silhouette_woman.png"]
+          }
+        },
+        "FrameBackgrounds": {
+          "totalFiles": 21,
+          "description": "Equipment slot backgrounds and themed frames",
+          "backgrounds": {
+            "equipment": ["head_background.png", "chest_background.png", "pants_background.png", "boots_background.png", "gloves_background.png", "shoulder_background.png"],
+            "weapons": ["melee_background.png", "range_background.png", "shield_background.png", "arrows_background.png"],
+            "accessories": ["neck_background.png", "ring_background.png", "trinket_background.png"],
+            "special": ["Rune_background.png", "skill_background.png", "potion_background.png", "lock_background.png"]
+          }
+        },
+        "Update": {
+          "totalFiles": 18,
+          "description": "Quality tiers, rarity frames and item enhancement elements",
+          "rarityFrames": {
+            "round": ["RoundFrame_grey.png", "RoundFrame_green.png", "RoundFrame_blue.png", "RoundFrame_purple.png", "RoundFrame_red.png"],
+            "square": ["Frame_grey.png", "Frame_green.png", "Frame_blue.png", "Frame_purple.png", "Frame_red.png"],
+            "backgrounds": ["Background_grey.png", "Background_green.png", "Background_blue.png", "Background_purple.png", "Background_red.png"]
+          },
+          "qualityColors": {
+            "grey": "Common items",
+            "green": "Uncommon items", 
+            "blue": "Rare items",
+            "purple": "Epic items",
+            "red": "Legendary items"
+          }
+        }
+      }
     }
   },
   "namingConventions": {

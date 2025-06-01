@@ -5,9 +5,9 @@
 ⚠️ **IMPORTANT**: Before starting any task, Claude Code must:
 1. **Review GDD.md** to understand the core game design, mechanics, and vision
 2. **Review PP.md** to understand the current project phase and specific task requirements
-3. **Align all work** with the project's loot-driven ARPG design principles
+3. **Align all work** with the project's design principles
+4. **Confirm request is complete before considering complete** unless explictly asked to turn the server off, ensure the dev server is running, and that it returns a response on localhost:5173 and that it has an expected response before considering something "complete" 
 
-This ensures all development stays true to the game's design fundamentals and follows the structured development plan.
 
 ## Project Overview
 **Project Loot & Craft** is a loot-driven ARPG with turn-based combat, deep crafting systems, and strategic itemization. The game focuses on item-based character progression where all power comes from equipped gear rather than traditional leveling.
@@ -54,7 +54,6 @@ npm run lint
 ### Testing
 - Follow TDD (Test-Driven Development) approach
 - All components must have comprehensive test coverage
-- Current test coverage: **31 passing tests** across 5 test files
 - Use `describe` blocks to group related tests
 - Test both functionality and UI state changes
 
@@ -74,42 +73,34 @@ src/
 └── test/               # Test utilities and setup
 ```
 
-## Current Implementation Status (Phase 1)
-
-### ✅ Completed Phase 1 Tasks
-**Section 1: Project Foundation & Core UI Structure**
-- **Task 1.1.1 ✅**: React project with MobX, MUI, testing framework
-- **Task 1.1.2 ✅**: Dark fantasy theming with medieval fonts (Cinzel)
-- **Task 1.2.1 ✅**: Main UI components (TownView, CombatView, RewardModal)
-- **Task 1.2.2 ✅**: Town layout with player inventory tabs, town buildings
-- **Task 1.2.3 ✅**: Combat layout with enemy area, action bar, targeting
-- **Task 1.2.4 ✅**: Reward modal layout
-- **Task 1.3.1 ✅**: Navigation system between views
-
-**Section 2: Item Interaction & Core Displays**
-- **Task 1.4.1 ✅**: Item display components with tooltips
-- **Task 1.4.2 ✅**: Inventory UI with basic grid layout
-- **Task 1.4.3 ✅**: Player equipment display (basic version)
-- **Task 1.4.4 ✅**: Stats bar UI in combat view
-- **Task 1.4.5 ✅**: Detailed stats display in town
-- **Task 1.4.6 ✅**: Stash interaction (basic version)
-- **Task 1.4.7 ✅**: Crafting bench UI (placeholder)
-- **Task 1.4.8 ✅**: Enemy placement and targeting visuals
 
 **Asset Integration**
 - ✅ **Icon Database**: 6,295 fantasy icons organized and accessible
 - ✅ **Visual Assets**: Weapon, armor, skill, and profession icons integrated
 
-### 🚧 Next Phase 1 Priorities (Combat Logic)
-**Section 2: Combat System - Core Mechanics (PP.md Tasks 2.1-2.7)**
-- **Task 2.1**: Design data structures for player/enemy stats (MobX stores)
-- **Task 2.2**: Implement turn management system
-- **Task 2.3**: Player "Attack" action implementation
-- **Task 2.4**: Player "Block" action implementation  
-- **Task 2.5**: Basic Enemy AI
-- **Task 2.6**: Combat feedback display
-- **Task 2.7**: Combat end conditions and rewards
+## Combat Visual System
 
+**Animation Framework**
+- **Enemy Hit Animation**: `translateY(-15px)` - enemies bounce "up" (away from player) when struck
+- **Enemy Attack Animation**: `translateY(10px)` - enemies jut "down" (towards player) when attacking
+- **Animation Timing**: 300ms hit delay + 600ms return animation for smooth sequencing
+- **Turn Processing Lock**: `isProcessingTurn` prevents button spam during animations
+
+**Floating Damage System**
+- **Damage Numbers**: Float up and fade out over 1.2 seconds
+- **Color Coding**: 
+  - Red: Normal damage
+  - Orange-red: Critical hits  
+  - Green: "DODGED"
+  - Blue: "BLOCKED"
+- **Positioning**: Damage appears above enemies or near player health bar with random offset
+- **Cleanup**: Auto-removal after animation completes to prevent memory leaks
+
+**Visual Perspective**
+- **Player Position**: Bottom of screen (conceptually)
+- **Enemy Position**: Top/center area (away from player)
+- **Movement Logic**: Up = away from player (backward), Down = towards player (forward)
+- **Turn Indicators**: Real-time emoji feedback (🗡️ Your Turn, ⚔️ Enemy Turn, 🎉 Victory, 💀 Defeat)
 
 ## Architecture Decisions
 
@@ -163,10 +154,10 @@ src/
 - **Static Hosting**: Can be deployed to any static hosting service
 
 ## Known Issues & Limitations
-- **Mock Data**: Combat and player data currently uses placeholder data (intentional for Phase 1)
-- **Combat Logic**: No functional turn-based mechanics yet (next priority)
-- **Item System**: No actual item stats or generation logic yet
+- **Mock Data**: Some player equipment data uses placeholder items for display (inventory system is functional)
+- **Item System**: Item generation and advanced crafting logic not yet implemented  
 - **Single View State**: Navigation state not persisted across page reloads
+- **Abilities System**: Player abilities placeholder (combat actions functional)
 
 ## Contributing Guidelines
 1. **Test First**: Write failing tests before implementing features
@@ -176,7 +167,3 @@ src/
 5. **Performance**: Consider render optimization for game-critical components
 
 ---
-
-*Last Updated: January 2025*
-*Project Phase: Phase 1 Section 1 & 2 Complete - Ready for Combat System Implementation (Tasks 2.1-2.7)*
-*Current Task: Begin implementing MobX stores for player/enemy stats (Task 2.1)*

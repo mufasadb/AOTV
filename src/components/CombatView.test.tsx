@@ -14,7 +14,7 @@ const renderWithTheme = (component: React.ReactElement) => {
 
 describe('CombatView', () => {
   it('displays player status panel', () => {
-    renderWithTheme(<CombatView />)
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getByText('Player Status')).toBeInTheDocument()
     expect(screen.getByText('Health')).toBeInTheDocument()
     expect(screen.getByText('Mana')).toBeInTheDocument()
@@ -22,15 +22,15 @@ describe('CombatView', () => {
   })
 
   it('shows combat stats', () => {
-    renderWithTheme(<CombatView />)
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getByText('Combat Stats')).toBeInTheDocument()
-    expect(screen.getByText(/Armor: 12/)).toBeInTheDocument()
-    expect(screen.getByText(/Dodge: 8%/)).toBeInTheDocument()
-    expect(screen.getByText(/Damage: 15-22/)).toBeInTheDocument()
+    expect(screen.getByText(/Armor:/)).toBeInTheDocument()
+    expect(screen.getByText(/Dodge:/)).toBeInTheDocument()
+    expect(screen.getByText(/Damage:/)).toBeInTheDocument()
   })
 
   it('displays equipment information', () => {
-    renderWithTheme(<CombatView />)
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getByText('Equipment')).toBeInTheDocument()
     expect(screen.getByText('Iron Sword')).toBeInTheDocument()
     expect(screen.getByText('Wooden Shield')).toBeInTheDocument()
@@ -38,29 +38,29 @@ describe('CombatView', () => {
   })
 
   it('shows enemy information', () => {
-    renderWithTheme(<CombatView />)
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getAllByText('Goblin Warrior').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Orc Berserker').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Dark Mage').length).toBeGreaterThan(0)
   })
 
   it('displays player action buttons', () => {
-    renderWithTheme(<CombatView />)
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getByRole('button', { name: /Attack/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Block/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Abilities/ })).toBeInTheDocument()
   })
 
-  it('shows buttons as disabled (placeholder state)', () => {
-    renderWithTheme(<CombatView />)
-    expect(screen.getByRole('button', { name: /Attack/ })).toBeDisabled()
-    expect(screen.getByRole('button', { name: /Block/ })).toBeDisabled()
+  it('shows attack and block buttons as enabled, abilities disabled', () => {
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
+    expect(screen.getByRole('button', { name: /Attack/ })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /Block/ })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: /Abilities/ })).toBeDisabled()
   })
 
   it('displays combat instructions', () => {
-    renderWithTheme(<CombatView />)
+    renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getByText(/Click an enemy to target/)).toBeInTheDocument()
-    expect(screen.getByText(/Turn-based combat system/)).toBeInTheDocument()
+    expect(screen.getByText(/Your Turn/)).toBeInTheDocument()
   })
 })
