@@ -1,0 +1,465 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "totalIcons": 6295,
+    "lastUpdated": "2025-01-06",
+    "description": "Comprehensive database of 5000FantasyIcons collection for Project Loot & Craft",
+    "categories": 5,
+    "cleanupCompleted": true,
+    "unityMetaFilesRemoved": 6344
+  },
+  "categories": {
+    "ArmorIcons": {
+      "totalFiles": 1047,
+      "description": "Equipment and armor pieces for character customization",
+      "subcategories": {
+        "BasicArmor_Icons": {
+          "totalFiles": 422,
+          "description": "Core armor pieces across all equipment slots",
+          "equipmentSlots": {
+            "chest": {
+              "count": 84,
+              "variants": ["farmer", "merchant", "knight", "mage", "crusader", "paladin"],
+              "examples": ["Chest_01_farmer.png", "Chest_32_mage.png", "Chest_15_knight.png"]
+            },
+            "helmets": {
+              "count": 72,
+              "variants": ["guard", "crusader", "gladiator", "samurai", "royal", "wizard"],
+              "examples": ["Helmet_23_guard.png", "Helmet_45_crusader.png", "Helmet_67_samurai.png"]
+            },
+            "shoulders": {
+              "count": 70,
+              "variants": ["basic", "ornate", "spiked", "cloth", "plate"],
+              "examples": ["Shoulders_12.png", "Shoulders_34.png", "Shoulders_56.png"]
+            },
+            "boots": {
+              "count": 56,
+              "variants": ["common", "paladin", "golden", "speed", "magic", "heavy"],
+              "examples": ["Boots_08_common.png", "Boots_23_paladin.png", "Boots_46_speed.png"]
+            },
+            "pants": {
+              "count": 42,
+              "variants": ["cloth", "leather", "chain", "plate"],
+              "examples": ["Pants_15.png", "Pants_28.png", "Pants_35.png"]
+            },
+            "belts": {
+              "count": 36,
+              "variants": ["leather", "chain", "fire", "ornate"],
+              "examples": ["Belt_09.png", "Belt_22_fire.png", "Belt_31.png"]
+            },
+            "gloves": {
+              "count": 28,
+              "variants": ["archer", "dragon", "witch", "death", "frost"],
+              "examples": ["Gloves_07_archer.png", "Gloves_19_dragon.png", "Gloves_25_witch.png"]
+            },
+            "back": {
+              "count": 16,
+              "variants": ["fur", "cloth", "ornate"],
+              "examples": ["Back_03_fur.png", "Back_11.png", "Back_14.png"]
+            },
+            "bracers": {
+              "count": 7,
+              "variants": ["leather", "metal", "ornate"],
+              "examples": ["Bracers_02.png", "Bracers_05.png", "Bracers_07.png"]
+            }
+          }
+        },
+        "ArmorSet_Icons": {
+          "totalFiles": 501,
+          "description": "Complete armor sets organized by material type",
+          "sets": {
+            "Mail": {
+              "count": 136,
+              "description": "Chainmail armor pieces",
+              "equipmentTypes": ["helmet", "chest", "legs", "boots", "gloves", "shoulders"]
+            },
+            "Cloth": {
+              "count": 136,
+              "description": "Cloth and robe armor pieces",
+              "equipmentTypes": ["helmet", "chest", "legs", "boots", "gloves", "shoulders"]
+            },
+            "Leather": {
+              "count": 136,
+              "description": "Leather armor pieces",
+              "equipmentTypes": ["helmet", "chest", "legs", "boots", "gloves", "shoulders"]
+            },
+            "Tabards": {
+              "count": 48,
+              "description": "Decorative tabards and surcoats"
+            },
+            "Cloak": {
+              "count": 33,
+              "description": "Cloaks and capes"
+            },
+            "HatSpecial": {
+              "count": 12,
+              "description": "Special and unique headwear"
+            }
+          }
+        },
+        "RingAndNeck_Icons": {
+          "totalFiles": 124,
+          "description": "Jewelry and accessories",
+          "types": ["rings", "necklaces", "amulets", "pendants"]
+        }
+      }
+    },
+    "WeaponIcons": {
+      "totalFiles": 1019,
+      "description": "Combat weapons and tools for all fighting styles",
+      "subcategories": {
+        "WeaponIconsVol1": {
+          "totalFiles": 514,
+          "description": "Primary weapon collection",
+          "weaponTypes": {
+            "swords": {
+              "count": 67,
+              "description": "One-handed and two-handed swords",
+              "examples": ["Sword_01.png", "Sword_32.png", "Sword_61.png"]
+            },
+            "daggers": {
+              "count": 60,
+              "description": "Fast attack daggers and knives",
+              "examples": ["Dagger_15.png", "Dagger_33.png", "Dagger_56.png"]
+            },
+            "axes": {
+              "count": 53,
+              "description": "Battle axes and war axes",
+              "examples": ["Axe_08.png", "Axe_27.png", "Axe_45.png"]
+            },
+            "shields": {
+              "count": 51,
+              "description": "Defensive shields of various sizes",
+              "examples": ["Shield_12.png", "Shield_29.png", "Shield_44.png"]
+            },
+            "staffs": {
+              "count": 50,
+              "description": "Magical staffs and wands",
+              "examples": ["Staff_06.png", "Staff_25.png", "Staff_47.png"]
+            },
+            "hammers": {
+              "count": 50,
+              "description": "War hammers and maces",
+              "examples": ["Hammer_03.png", "Hammer_21.png", "Hammer_38.png"]
+            },
+            "bows": {
+              "count": 41,
+              "description": "Ranged bows for archery",
+              "examples": ["Bow_09.png", "Bow_24.png", "Bow_35.png"]
+            },
+            "spears": {
+              "count": 40,
+              "description": "Polearms and spears",
+              "examples": ["Spear_07.png", "Spear_22.png", "Spear_36.png"]
+            },
+            "arrows": {
+              "count": 40,
+              "description": "Arrow types and ammunition",
+              "examples": ["Arrow_04.png", "Arrow_18.png", "Arrow_31.png"]
+            },
+            "books": {
+              "count": 25,
+              "description": "Spellbooks and tomes",
+              "examples": ["Book_05.png", "Book_13.png", "Book_20.png"]
+            },
+            "crossbows": {
+              "count": 10,
+              "description": "Mechanical crossbows",
+              "examples": ["Crossbow_02.png", "Crossbow_07.png", "Crossbow_10.png"]
+            },
+            "bolts": {
+              "count": 10,
+              "description": "Crossbow bolts and quarrels",
+              "examples": ["Bolt_03.png", "Bolt_06.png", "Bolt_09.png"]
+            },
+            "scythes": {
+              "count": 7,
+              "description": "Reaper scythes and farming tools",
+              "examples": ["Scythe_01.png", "Scythe_04.png", "Scythe_07.png"]
+            }
+          }
+        },
+        "WeaponIconsVol2": {
+          "totalFiles": 505,
+          "description": "Extended weapon collection with additional variants"
+        }
+      }
+    },
+    "SkillsIcons": {
+      "totalFiles": 2557,
+      "description": "Class abilities and magical skills for character progression",
+      "subcategories": {
+        "Skillicons": {
+          "totalFiles": 1001,
+          "description": "Core skill collection",
+          "formats": {
+            "Skill_standart": {
+              "count": 501,
+              "description": "Skills with decorative backgrounds"
+            },
+            "Skill_nobg": {
+              "count": 500,
+              "description": "Skills without backgrounds for UI flexibility"
+            }
+          }
+        },
+        "SkilliconsVol2": {
+          "totalFiles": 1209,
+          "description": "Extended skill collection",
+          "formats": {
+            "Skill_standart": {
+              "count": 615,
+              "description": "Extended skills with decorative backgrounds"
+            },
+            "Skill_nobg": {
+              "count": 594,
+              "description": "Extended skills without backgrounds"
+            }
+          }
+        },
+        "Bonus": {
+          "totalFiles": 347,
+          "description": "Special and elemental skill variants",
+          "collections": {
+            "Skills_elements": {
+              "count": 92,
+              "description": "Elemental magic skills with backgrounds"
+            },
+            "Skills_elements_nobg": {
+              "count": 92,
+              "description": "Elemental magic skills without backgrounds"
+            },
+            "Skill1_Standart": {
+              "count": 46,
+              "description": "Bonus skill set 1 with backgrounds"
+            },
+            "Skill1_Nobg": {
+              "count": 45,
+              "description": "Bonus skill set 1 without backgrounds"
+            },
+            "Skill2_Standart": {
+              "count": 36,
+              "description": "Bonus skill set 2 with backgrounds"
+            },
+            "Skill2_Nobg": {
+              "count": 36,
+              "description": "Bonus skill set 2 without backgrounds"
+            }
+          }
+        }
+      },
+      "classSkills": {
+        "description": "Skills organized by character class (10 classes, 50 skills each)",
+        "classes": [
+          {
+            "name": "Archerskill",
+            "description": "Ranged combat and precision abilities",
+            "skillCount": 50,
+            "examples": ["Archerskill_01_nobg.png", "Archerskill_25_standart.png", "Archerskill_50_nobg.png"]
+          },
+          {
+            "name": "Assassinskill",
+            "description": "Stealth and critical strike abilities",
+            "skillCount": 50,
+            "examples": ["Assassinskill_03_nobg.png", "Assassinskill_27_standart.png", "Assassinskill_45_nobg.png"]
+          },
+          {
+            "name": "Druideskill",
+            "description": "Nature magic and shapeshifting abilities",
+            "skillCount": 50,
+            "examples": ["Druideskill_05_nobg.png", "Druideskill_29_standart.png", "Druideskill_42_nobg.png"]
+          },
+          {
+            "name": "Engineerskill",
+            "description": "Technology and mechanical abilities",
+            "skillCount": 50,
+            "examples": ["Engineerskill_07_nobg.png", "Engineerskill_23_standart.png", "Engineerskill_48_nobg.png"]
+          },
+          {
+            "name": "Mageskill",
+            "description": "Arcane magic and elemental spells",
+            "skillCount": 50,
+            "examples": ["Mageskill_02_nobg.png", "Mageskill_31_standart.png", "Mageskill_47_nobg.png"]
+          },
+          {
+            "name": "Paladinskill",
+            "description": "Holy magic and defensive abilities",
+            "skillCount": 50,
+            "examples": ["Paladinskill_04_nobg.png", "Paladinskill_26_standart.png", "Paladinskill_43_nobg.png"]
+          },
+          {
+            "name": "Priestskill",
+            "description": "Healing and divine magic abilities",
+            "skillCount": 50,
+            "examples": ["Priestskill_06_nobg.png", "Priestskill_28_standart.png", "Priestskill_41_nobg.png"]
+          },
+          {
+            "name": "Shamanskill",
+            "description": "Elemental and spirit magic abilities",
+            "skillCount": 50,
+            "examples": ["Shamanskill_08_nobg.png", "Shamanskill_24_standart.png", "Shamanskill_46_nobg.png"]
+          },
+          {
+            "name": "Warlock",
+            "description": "Dark magic and curse abilities",
+            "skillCount": 50,
+            "examples": ["Warlock_01_nobg.png", "Warlock_30_standart.png", "Warlock_49_nobg.png"]
+          },
+          {
+            "name": "Warriorskill",
+            "description": "Melee combat and physical abilities",
+            "skillCount": 50,
+            "examples": ["Warriorskill_09_nobg.png", "Warriorskill_22_standart.png", "Warriorskill_44_nobg.png"]
+          }
+        ]
+      }
+    },
+    "ProfessionIcons": {
+      "totalFiles": 1171,
+      "description": "Crafting materials, resources, and profession-related items",
+      "subcategories": {
+        "LootIcons": {
+          "totalFiles": 203,
+          "description": "Miscellaneous items and loot drops",
+          "examples": ["Loot_12_leather.png", "Loot_34_keys.png", "Loot_67_skulls.png"]
+        },
+        "ResourceIcons": {
+          "totalFiles": 169,
+          "description": "Raw materials and crafting components",
+          "examples": ["Resource_08_wood.png", "Resource_25_metal.png", "Resource_43_gems.png"]
+        },
+        "QuestIcons": {
+          "totalFiles": 159,
+          "description": "Quest items and mission objectives",
+          "examples": ["Quest_15_scroll.png", "Quest_32_artifact.png", "Quest_54_tome.png"]
+        },
+        "ProfessionAndCraftIcons": {
+          "totalFiles": 640,
+          "description": "Profession-specific tools and crafted items",
+          "professions": {
+            "Alchemy": {
+              "count": 77,
+              "description": "Potions, vials, and alchemical tools",
+              "examples": ["Alchemy_05_healthPotion.png", "Alchemy_23_manaPotion.png", "Alchemy_41_elixir.png"]
+            },
+            "Blacksmith": {
+              "count": 60,
+              "description": "Forging tools and metal crafting",
+              "examples": ["Blacksmith_03_hammer.png", "Blacksmith_18_anvil.png", "Blacksmith_35_ingot.png"]
+            },
+            "Cooking_fishing": {
+              "count": 60,
+              "description": "Food preparation and fishing equipment",
+              "examples": ["Cooking_07_fish.png", "Cooking_22_bread.png", "Cooking_45_rod.png"]
+            },
+            "Enchantment": {
+              "count": 67,
+              "description": "Magical enhancement and enchanting tools",
+              "examples": ["Enchantment_04_crystal.png", "Enchantment_19_rune.png", "Enchantment_38_essence.png"]
+            },
+            "Engineering": {
+              "count": 60,
+              "description": "Mechanical devices and engineering tools",
+              "examples": ["Engineering_06_gear.png", "Engineering_24_blueprint.png", "Engineering_42_device.png"]
+            },
+            "Herbalism": {
+              "count": 60,
+              "description": "Plants, herbs, and natural ingredients",
+              "examples": ["Herbalism_02_herb.png", "Herbalism_27_flower.png", "Herbalism_49_seed.png"]
+            },
+            "Jewelry": {
+              "count": 60,
+              "description": "Gems, precious metals, and jewelry crafting",
+              "examples": ["Jewelry_09_diamond.png", "Jewelry_26_ruby.png", "Jewelry_44_ring.png"]
+            },
+            "Mining": {
+              "count": 60,
+              "description": "Ores, minerals, and mining equipment",
+              "examples": ["Mining_11_pickaxe.png", "Mining_28_ore.png", "Mining_47_crystal.png"]
+            },
+            "Skinning": {
+              "count": 60,
+              "description": "Leather, pelts, and animal materials",
+              "examples": ["Skinning_13_pelt.png", "Skinning_30_leather.png", "Skinning_48_hide.png"]
+            },
+            "Tailoring": {
+              "count": 60,
+              "description": "Cloth, thread, and textile crafting",
+              "examples": ["Tailoring_16_cloth.png", "Tailoring_33_thread.png", "Tailoring_51_needle.png"]
+            },
+            "Builder": {
+              "count": 15,
+              "description": "Construction tools and building materials",
+              "examples": ["Builder_02_hammer.png", "Builder_08_wood.png", "Builder_14_stone.png"]
+            }
+          }
+        }
+      }
+    },
+    "MedievalIcons": {
+      "totalFiles": 500,
+      "description": "Medieval-themed items with historical authenticity",
+      "subcategories": {
+        "WeponMedieval": {
+          "totalFiles": 110,
+          "description": "Historically accurate medieval weapons",
+          "weaponTypes": ["bows", "shields", "spears", "daggers", "hammers", "clubs"],
+          "examples": ["AssassinsDagger.png", "GoldenShield.png", "WarBow.png"]
+        },
+        "ArmorMedieval": {
+          "totalFiles": 105,
+          "description": "Medieval armor pieces and protection",
+          "examples": ["ChainmailCoif.png", "PlateHelmet.png", "LeatherGauntlets.png"]
+        },
+        "ResourcesMedieval": {
+          "totalFiles": 135,
+          "description": "Medieval crafting materials and resources",
+          "examples": ["IronOre.png", "WoodenPlanks.png", "AnimalHide.png"]
+        },
+        "SkillsMedieval": {
+          "totalFiles": 70,
+          "description": "Medieval-themed abilities and techniques",
+          "examples": ["Swordplay.png", "Archery.png", "Horsemanship.png"]
+        },
+        "TechnologiesMedieval": {
+          "totalFiles": 70,
+          "description": "Medieval technologies and innovations",
+          "examples": ["Windmill.png", "Catapult.png", "WaterWheel.png"]
+        },
+        "Formation": {
+          "totalFiles": 10,
+          "description": "Military formations and tactics",
+          "examples": ["ShieldWall.png", "Phalanx.png", "Cavalry.png"]
+        }
+      }
+    }
+  },
+  "namingConventions": {
+    "armor": "{Type}_{Number}_{OptionalDescription}.png",
+    "weapons": "{Type}_{Number}.png",
+    "skills": "{Class}skill_{Number}_{nobg|standart}.png",
+    "loot": "Loot_{Number}_{OptionalDescription}.png",
+    "medieval": "Descriptive names with proper capitalization"
+  },
+  "gameIntegration": {
+    "recommendedForCombat": [
+      "WeaponIcons/WeaponIconsVol1/swords",
+      "WeaponIcons/WeaponIconsVol1/shields",
+      "ArmorIcons/BasicArmor_Icons/chest",
+      "SkillsIcons/Skillicons/Skill_nobg"
+    ],
+    "recommendedForInventory": [
+      "ProfessionIcons/LootIcons",
+      "ProfessionIcons/ResourceIcons",
+      "ArmorIcons/RingAndNeck_Icons"
+    ],
+    "recommendedForSkills": [
+      "SkillsIcons/classSkills",
+      "SkillsIcons/Bonus/Skills_elements_nobg"
+    ],
+    "recommendedForTown": [
+      "ProfessionIcons/ProfessionAndCraftIcons",
+      "MedievalIcons/TechnologiesMedieval"
+    ]
+  }
+}
