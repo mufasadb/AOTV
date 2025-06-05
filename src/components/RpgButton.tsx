@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import { getRpgFrame } from '../utils/iconHelper'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { transitions } from '../theme/animations'
 
 interface RpgButtonProps {
   children: ReactNode
@@ -95,12 +96,15 @@ const RpgButton = ({
         height: buttonConfig.height,
         cursor: disabled ? 'not-allowed' : 'pointer',
         userSelect: 'none',
-        transform: isPressed ? 'translateY(1px)' : 'none',
-        transition: 'all 0.1s ease',
-        filter: isHovered && !disabled ? 'brightness(1.1)' : 'none',
+        transform: isPressed ? 'translateY(2px) scale(0.98)' : isHovered && !disabled ? 'translateY(-1px) scale(1.02)' : 'none',
+        transition: transitions.fast,
+        filter: isHovered && !disabled ? 'brightness(1.15) drop-shadow(0 4px 8px rgba(0,0,0,0.5))' : 'none',
         border: 'none',
         background: 'transparent',
         padding: 0,
+        '&:active': {
+          transform: 'translateY(2px) scale(0.98)',
+        },
       }}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}

@@ -41,80 +41,111 @@
 ## **Phase 1: Core Combat & Loot Loop Prototype \- Detailed Task Breakdown for Junior Developers**
 
 **Section 1: Project Foundation & Core UI Structure**
+Section 1 is now complete
 
-* **Task 1.1.1: Initialize React Project & Core Dependencies**  
-  * **Description:** Create a new React project (e.g., using Create React App or Vite). Integrate MobX for state management and MUI for UI components. Set up a testing framework (Jest and React Testing Library are recommended).  
-  * **Deliverables:** A runnable React application with MobX and MUI installed and configured. Basic "App" component rendering. Initial test suite setup capable of running simple component tests.  
-  * **Notes:** Follow TDD principles: write a failing test before implementing functionality.  
-* **Task 1.1.2: Theming & Basic App Layout**  
-  * **Description:** Implement a basic theme system using MUI, supporting dark (default) and light modes. Choose a primary font reminiscent of Diablo 2 (e.g., "Exocet" or a similar free alternative like "Cinzel Decorative" or "MedievalSharp" \- developer to research and select a suitable free font). The overall aesthetic should be dark and gritty.  
-  * **Deliverables:** App uses the chosen font. Dark mode is applied by default. A simple toggle or mechanism for switching to light mode (can be basic for now).  
-  * **Notes:** Ensure theme colors and font choices contribute to the "Diablo 2" gritty feel.  
-* **Task 1.2.1: Mockup & Implement Main UI Views (Components)**  
-  * **Description:** Create basic React components for the three primary game views: `TownView`, `CombatView`, and a `RewardModal` component. These will initially be placeholders with minimal content but should be routable/displayable.  
-  * **Deliverables:**  
-    * `TownView.js`: Placeholder component.  
-    * `CombatView.js`: Placeholder component.  
-    * `RewardModal.js`: Placeholder component.  
-  * **Notes:** Focus on component structure and basic rendering.  
-* **Task 1.2.2: Town View \- Initial Layout & Mockup Elements**  
-  * **Description:** Based on mockups, structure the `TownView` component.  
-    * **Player Inventory Section:**  
-      * Tabbed interface: "Items" (main gear/backpack), "Stats" (Health, Mana, Attack placeholder), "Crafting Mats," "Keys."  
-    * **Player Doll Section:** A visual placeholder area where equipped items will eventually be shown.  
-    * **Main Town Area:** Initially shows basic town visuals/buttons. This area will later be replaced by Stash or Crafting Bench overlays.  
-      * Button/Interaction point: "Open Stash"  
-      * Button/Interaction point: "Open Crafting Bench"  
-      * Button/Interaction point: "Go to Dungeon" (leads to combat)  
-  * **Deliverables:** `TownView` component with MUI components structuring these areas. Tabs should be clickable but don't need functional content yet. Player doll is a styled div.  
-  * **Notes:** Aim for a layout that feels intuitive on both desktop and mobile (MUI's responsive features will help).  
-* **Task 1.2.3: Combat View \- Initial Layout & Mockup Elements**  
-  * **Description:** Based on mockups, structure the `CombatView` component.  
-    * **Enemy Area:** Design space for up to 5 enemy representations. Include visual placeholders for "forward" (melee) and "back" (ranged) positioning for each enemy slot. Add a placeholder for "next action indicator" above each enemy slot.  
-    * **Player Action Bar:** Two prominent buttons: "Attack," "Block."  
-    * **Target Selector:** A visual way to indicate which enemy is currently targeted (can be a simple border or highlight around an enemy placeholder).  
-  * **Deliverables:** `CombatView` component with MUI components structuring these areas. Buttons are present but not functional.  
-  * **Notes:** Consider how enemy selection will work on touch vs. mouse.  
-* **Task 1.2.4: Reward Modal \- Initial Layout**  
-  * **Description:** Structure the `RewardModal` component. This will appear after combat.  
-    * Title (e.g., "Victory\!")  
-    * Area to display list of rewards (placeholder for now).  
-    * "Return to Town" button.  
-  * **Deliverables:** `RewardModal` component layout.  
-* **Task 1.3.1: Basic Navigation/Routing**  
-  * **Description:** Implement a simple routing or state-driven mechanism to switch between `TownView` and `CombatView`. The `RewardModal` will be shown conditionally (e.g., on combat completion).  
-  * **Deliverables:** User can navigate from Town to Combat and (conceptually) trigger the Reward Modal which then returns to Town.  
-  * **Notes:** React Router can be used, or a simpler state management approach for these few views.
+**Section 2:**
+Task 2.1.3: Integrate Player Stats with UI
 
-**Section 2: Item Interaction & Core Displays**
+Description: Connect the playerStore to the High-Level Stats Bar UI (Task 1.4.4) and the "Stats" tab in the TownView (Task 1.2.2 / 1.4.5) so they display actual values from the store.
 
-* **Task 1.4.1: Item Component & Basic Display**  
-  * **Description:** Create a reusable `ItemDisplay` component. It should take item data (placeholder for now, e.g., `{ name: "Rusty Sword", type: "Weapon" }`) and display it. Implement onHover/onTouchStart to show a tooltip with item details (mock details for now).  
-  * **Deliverables:** `ItemDisplay` component. Tooltip appears on interaction.  
-  * **Notes:** This component is crucial. Focus on clarity and responsiveness of the tooltip.  
-* **Task 1.4.2: Inventory UI & Basic Drag-and-Drop Foundation**  
-  * **Description:** Implement the "Items" tab within the Player Inventory section of `TownView`. Display a grid of placeholder items using the `ItemDisplay` component. Begin implementing drag-and-drop functionality for items within this inventory grid.  
-  * **Deliverables:** Inventory grid displays items. Basic drag-and-drop allows reordering items within the grid.  
-  * **Notes:** Libraries like `react-beautiful-dnd` or `dnd-kit` can be used. Ensure it feels fluid. Test on desktop (mouse) and consider touch interactions.  
-* **Task 1.4.3: Player Doll UI & Equipping Logic (Placeholder Stats)**  
-  * **Description:** Implement the Player Doll section in `TownView` with distinct slots for equippable items (e.g., Weapon, Helmet, Chest). Allow dragging items from the inventory to these slots. When an item is equipped, update a *mock* behind-the-scenes stats object (e.g., in a MobX store) and reflect a change in the "Stats" tab (e.g., "Attack: 10 \-\> 15").  
-  * **Deliverables:** Items can be dragged to player doll slots. Mock stats update and display in the "Stats" tab.  
-  * **Notes:** The stat update is just a visual placeholder; no actual combat calculations yet.  
-* **Task 1.4.4: High-Level Stats Bar UI**  
-  * **Description:** Create a persistent UI component (e.g., at the top or bottom of the screen) that displays mock Health, Energy Shield (if applicable early), and Mana values, plus a basic Attack overview. This should read from the mock stats object.  
-  * **Deliverables:** Stats bar component displaying mock data.  
-* **Task 1.4.5: Detailed Stats Display (On Hover/Click)**  
-  * **Description:** In the "Stats" tab of the player inventory, or as a general UI element, create a section that shows more detailed stats. Initially, this can be mock data. Implement an onHover/onClick interaction for certain stats to show a tooltip explaining what they do (e.g., hover over "Crit Chance" shows "Chance to deal critical damage").  
-  * **Deliverables:** Detailed stats display area with interactive tooltips for explanations.  
-* **Task 1.4.6: Stash View UI (Overlay)**  
-  * **Description:** When "Open Stash" is clicked in `TownView`, display an overlay component for the Stash. This should feature a tabbed interface for multiple "chests" (initially, one tab is fine). The stash itself is another grid for items, supporting drag-and-drop from the player inventory to the stash, and vice-versa. Include placeholder areas for "spare player dolls" for loadouts (non-functional).  
-  * **Deliverables:** Stash overlay with item grid and drag-and-drop interaction with player inventory.  
-* **Task 1.4.7: Crafting Bench UI (Overlay \- Placeholder)**  
-  * **Description:** When "Open Crafting Bench" is clicked, display an overlay. This should have a central "anvil" area (where an item to be crafted is placed) and a slot for a "crafting tool/consumable." For now, these are visual placeholders.  
-  * **Deliverables:** Crafting bench overlay with placeholder slots.  
-* **Task 1.4.8: Combat View \- Enemy Placement & Target Selector (Visuals Only)**  
-  * **Description:** In `CombatView`, populate the enemy area with 1-3 visual placeholders for enemies (can be simple styled divs). Implement the visual aspect of the target selector: clicking an enemy placeholder should visually highlight it. The Attack/Block buttons should be present but do not need to trigger any game logic yet.  
-  * **Deliverables:** Enemies visually represented. Clicking an enemy highlights it. Attack/Block buttons are visible.
+Deliverables: Player HP and Attack Power are dynamically displayed and update if changed in the store.
 
-*(Subsequent detailed tasks for combat logic, loot logic, etc., will follow once this UI foundation is in place)*
+Notes: Use MobX observer HOC or hooks to make components reactive.
 
+Task 2.2.1: Implement Turn Manager Logic (MobX)
+
+Description: In combatStore.js, implement a simple turn management system. Add an observable property like currentTurn: 'player' | 'enemy'. Create actions to switch turns (e.g., endPlayerTurn(), startEnemyTurn()).
+
+Deliverables: Logic to track and change the current turn.
+
+Notes: The actual turn progression will be triggered by player actions or after enemy actions complete.
+
+Task 2.2.2: Display Current Turn in UI
+
+Description: In the CombatView, display a message indicating whose turn it is (e.g., "Player's Turn" or "Enemies' Turn") based on combatStore.currentTurn.
+
+Deliverables: UI element dynamically shows the current turn.
+
+Task 2.3.1: Implement Player "Attack" Action Logic
+
+Description: When the "Attack" button in CombatView is clicked and an enemy is targeted:
+
+Verify it's the player's turn.
+
+Get player's baseAttackPower from playerStore.
+
+Reduce the targeted enemy instance's currentHP in combatStore by the player's attack power.
+
+Trigger endPlayerTurn() if the action is successful.
+
+Deliverables: Clicking "Attack" on a selected enemy reduces its HP. The turn advances to the enemy.
+
+Notes: Ensure an enemy must be selected. Disable attack button if not player's turn. For this prototype phase, damage calculation is direct: damage dealt = attacker's attackPower. No other modifiers (like defense, critical hits, or damage ranges) are implemented yet, beyond the specific 'Block' mechanic.
+
+Task 2.3.2: Update Enemy UI on Damage
+
+Description: The CombatView should observe changes to enemy HP in combatStore and update the visual representation of enemies (e.g., HP bar or text) when they take damage.
+
+Deliverables: Enemy HP display updates in real-time.
+
+Task 2.4.1: Implement Player "Block" Action Logic
+
+Description: When the "Block" button in CombatView is clicked:
+
+Verify it's the player's turn.
+
+Set a temporary status on the playerStore (e.g., isBlocking: true).
+
+Trigger endPlayerTurn().
+
+Deliverables: Clicking "Block" sets a blocking status on the player and advances the turn.
+
+Notes: When the player next takes damage (in Task 2.5.1), if isBlocking is true, reduce that instance of damage by 50%, and then immediately set isBlocking = false. This means the block applies to only one hit.
+
+Task 2.5.1: Implement Basic Enemy AI Action
+
+Description: When startEnemyTurn() is called and combatStore.currentTurn is 'enemy':
+
+Iterate through active enemy instances. For now, the first living enemy instance attacks.
+
+The active enemy instance deals its attackPower (from its JSON definition/instance data) as damage to the player's currentHP in playerStore.
+
+If player isBlocking, reduce damage taken by 50%. Reset playerStore.isBlocking to false.
+
+After the enemy action, switch turn back to player (combatStore.currentTurn = 'player').
+
+Deliverables: Player takes damage from an enemy during the enemy's turn. Block correctly mitigates damage. Turn returns to player.
+
+Notes: This is very basic AI. For this prototype phase, damage calculation is direct: damage dealt = attacker's attackPower. No other modifiers implemented yet.
+
+Task 2.6.1: Display Floating Damage Numbers
+
+Description: When damage is dealt (to player or enemy), display a temporary "floating" number near the target indicating the damage amount.
+
+Deliverables: Visual feedback for damage dealt.
+
+Notes: This can be a simple animated component that appears and fades out.
+
+Task 2.7.1: Implement Combat End Condition - Player Defeat
+
+Description: Continuously monitor playerStore.currentHP. If it reaches 0 or less:
+
+Set a game state to "Combat Lost" (e.g., in combatStore).
+
+Display a "Defeat!" message or modal.
+
+Provide an option to return to TownView (no item loss penalties for this prototype phase).
+
+Deliverables: Combat ends when player HP is 0, defeat message shown.
+
+Task 2.7.2: Implement Combat End Condition - Player Victory
+
+Description: Continuously monitor enemy HPs in combatStore. If all enemies' currentHP reach 0 or less:
+
+Set a game state to "Combat Won."
+
+Trigger the RewardModal (Task 1.2.4) to be displayed.
+
+Deliverables: Combat ends when all enemies are defeated, Reward Modal appears.
+
+Notes: The Reward Modal's "Return to Town" button will handle navigation. Loot generation will be a separate set of tasks.

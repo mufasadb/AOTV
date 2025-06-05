@@ -28,14 +28,60 @@ export class IconHelper {
     const formatNumber = (num: number): string => {
       return num < 10 ? `0${num}` : num.toString();
     };
+
+    // Special mapping for numbered variants with specific names
+    const specialHelmetFiles: { [variant: number]: string } = {
+      1: 'Helm_01_guard.png',
+      5: 'Helm_05_Crusader.png', 
+      7: 'Helm_07_footman.png',
+      11: 'Helm_11_footman.png',
+      12: 'Helm_12_broken.png',
+      14: 'Helm_14_gold.png',
+      15: 'Helm_15_ogre.png',
+      21: 'Helm_21_spearman.png',
+      22: 'Helm_22_spearman.png',
+      25: 'Helm_25_gladiator.png',
+      29: 'Helm_29_samurai.png',
+      31: 'Helm_31_gold.png',
+      34: 'Helm_34_Mask.png',
+      35: 'Helm_35_mask.png',
+      36: 'Helm_36_mask.png',
+      38: 'Helm_38_wanderer.png',
+      39: 'Helm_39_inhabitant.png',
+      41: 'Helm_41_gold.png',
+      43: 'Helm_43_knight.png',
+      46: 'Helm_46_camel.png',
+      49: 'Helm_49_knight.png',
+      50: 'Helm_50_gold.png',
+      52: 'Helm_52_gold.png',
+      53: 'Helm_53_horns.png',
+      55: 'Helm_55_farmer.png',
+      57: 'Helm_57_priest.png',
+      59: 'Helm_59_rogue.png',
+      60: 'Helm_60_robber.png',
+      61: 'Helm_61_crown.png',
+      63: 'Helm_63_queen.png',
+      65: 'Helm_65_king.png',
+      70: 'Helm_70_mage.png',
+      71: 'Helm_71_green.png'
+    };
+    
+    const getHelmetPath = (variant: number): string => {
+      if (specialHelmetFiles[variant]) {
+        return `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/${specialHelmetFiles[variant]}`;
+      }
+      return `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Helm_${formatNumber(variant)}.png`;
+    };
     
     const armorPaths: { [key: string]: string } = {
-      helmet: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Helm_${formatNumber(variant)}.png`,
+      helmet: getHelmetPath(variant),
+      head: getHelmetPath(variant),
       chest: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Chest_${formatNumber(variant)}.png`,
       pants: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Pants_${formatNumber(variant)}.png`,
       boots: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Boots_${formatNumber(variant)}.png`,
       gloves: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Gloves_${formatNumber(variant)}.png`,
       shoulders: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Shoulder_${formatNumber(variant)}.png`,
+      shoulder: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Shoulder_${formatNumber(variant)}.png`,
       belt: `${this.BASE_PATH}/ArmorIcons/BasicArmor_Icons/Belt_${formatNumber(variant)}.png`,
     };
     

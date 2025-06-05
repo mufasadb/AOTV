@@ -1,0 +1,398 @@
+{
+  "weapons": {
+    "iron_sword": {
+      "id": "iron_sword",
+      "name": "Iron Sword",
+      "type": "weapon",
+      "slotType": "melee",
+      "rarity": "common",
+      "description": "A sturdy iron blade forged with care",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/Sword_15.png",
+      "stats": {
+        "attack": 12,
+        "speed": 8,
+        "critChance": 5
+      },
+      "requirements": {
+        "level": 1
+      }
+    },
+    "steel_sword": {
+      "id": "steel_sword",
+      "name": "Steel Sword",
+      "type": "weapon",
+      "slotType": "melee",
+      "rarity": "uncommon",
+      "description": "A superior blade of refined steel",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/Sword_25.png",
+      "stats": {
+        "attack": 18,
+        "speed": 10,
+        "critChance": 8
+      },
+      "requirements": {
+        "level": 5
+      }
+    },
+    "war_axe": {
+      "id": "war_axe",
+      "name": "War Axe",
+      "type": "weapon",
+      "slotType": "melee",
+      "rarity": "rare",
+      "description": "Heavy two-handed axe that cleaves through armor",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/Axe_22.png",
+      "stats": {
+        "attack": 28,
+        "speed": 4,
+        "critChance": 12,
+        "critMultiplier": 1.8
+      },
+      "requirements": {
+        "level": 8
+      }
+    },
+    "flame_blade": {
+      "id": "flame_blade",
+      "name": "Flame Blade",
+      "type": "weapon",
+      "slotType": "melee",
+      "rarity": "epic",
+      "description": "A magical sword wreathed in eternal flames",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/Sword_40.png",
+      "stats": {
+        "attack": 35,
+        "speed": 12,
+        "critChance": 15,
+        "fireResistance": 10
+      },
+      "damageType": "fire",
+      "requirements": {
+        "level": 12
+      }
+    },
+    "wooden_shield": {
+      "id": "wooden_shield",
+      "name": "Wooden Shield",
+      "type": "weapon",
+      "slotType": "shield",
+      "rarity": "common",
+      "description": "Basic wooden shield offering minimal protection",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/shield_05.png",
+      "stats": {
+        "block": 15,
+        "armor": 3
+      }
+    },
+    "iron_shield": {
+      "id": "iron_shield",
+      "name": "Iron Shield",
+      "type": "weapon",
+      "slotType": "shield",
+      "rarity": "uncommon",
+      "description": "Sturdy iron shield with reinforced bindings",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/shield_12.png",
+      "stats": {
+        "block": 25,
+        "armor": 8
+      }
+    },
+    "hunters_bow": {
+      "id": "hunters_bow",
+      "name": "Hunter's Bow",
+      "type": "weapon",
+      "slotType": "melee",
+      "rarity": "common",
+      "description": "Reliable bow favored by forest hunters",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/Bow_08.png",
+      "stats": {
+        "attack": 15,
+        "speed": 15,
+        "critChance": 12
+      }
+    },
+    "crystal_staff": {
+      "id": "crystal_staff",
+      "name": "Crystal Staff",
+      "type": "weapon",
+      "slotType": "melee",
+      "rarity": "rare",
+      "description": "Staff topped with a magical crystal that amplifies spells",
+      "icon": "/5000FantasyIcons/WeaponIcons/WeaponIconsVol1/staff_18.png",
+      "stats": {
+        "attack": 20,
+        "speed": 6,
+        "critChance": 8,
+        "manaBonus": 25
+      },
+      "damageType": "lightning"
+    }
+  },
+  "armor": {
+    "leather_cap": {
+      "id": "leather_cap",
+      "name": "Leather Cap",
+      "type": "armor",
+      "slotType": "head",
+      "rarity": "common",
+      "description": "Simple leather headgear offering basic protection",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Helm_12_broken.png",
+      "stats": {
+        "armor": 2,
+        "dodge": 2
+      }
+    },
+    "iron_helm": {
+      "id": "iron_helm",
+      "name": "Iron Helm",
+      "type": "armor",
+      "slotType": "head",
+      "rarity": "uncommon",
+      "description": "Solid iron helmet with nose guard protection",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Helm_15.png",
+      "stats": {
+        "armor": 8,
+        "fireResistance": 5
+      }
+    },
+    "chain_mail": {
+      "id": "chain_mail",
+      "name": "Chain Mail",
+      "type": "armor",
+      "slotType": "chest",
+      "rarity": "common",
+      "description": "Interlocked metal rings providing flexible protection",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Chest_08.png",
+      "stats": {
+        "armor": 12,
+        "speed": -2
+      }
+    },
+    "plate_armor": {
+      "id": "plate_armor",
+      "name": "Plate Armor",
+      "type": "armor",
+      "slotType": "chest",
+      "rarity": "rare",
+      "description": "Heavy metal plates offering superior protection",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Chest_25.png",
+      "stats": {
+        "armor": 25,
+        "speed": -8,
+        "fireResistance": 10
+      }
+    },
+    "leather_boots": {
+      "id": "leather_boots",
+      "name": "Leather Boots",
+      "type": "armor",
+      "slotType": "boots",
+      "rarity": "common",
+      "description": "Comfortable leather boots for long journeys",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Boots_05.png",
+      "stats": {
+        "armor": 3,
+        "speed": 3
+      }
+    },
+    "speed_boots": {
+      "id": "speed_boots",
+      "name": "Boots of Speed",
+      "type": "armor",
+      "slotType": "boots",
+      "rarity": "epic",
+      "description": "Enchanted boots that enhance the wearer's agility",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Boots_20.png",
+      "stats": {
+        "armor": 5,
+        "speed": 15,
+        "dodge": 8
+      }
+    },
+    "steel_gauntlets": {
+      "id": "steel_gauntlets",
+      "name": "Steel Gauntlets",
+      "type": "armor",
+      "slotType": "gloves",
+      "rarity": "uncommon",
+      "description": "Reinforced steel gloves that enhance grip and protection",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Gloves_12.png",
+      "stats": {
+        "armor": 6,
+        "attack": 3
+      }
+    },
+    "fur_pauldrons": {
+      "id": "fur_pauldrons",
+      "name": "Fur Pauldrons",
+      "type": "armor",
+      "slotType": "shoulder",
+      "rarity": "common",
+      "description": "Warm shoulder guards lined with wolf fur",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Shoulder_08.png",
+      "stats": {
+        "armor": 4,
+        "iceResistance": 8
+      }
+    },
+    "steel_pauldrons": {
+      "id": "steel_pauldrons",
+      "name": "Steel Pauldrons",
+      "type": "armor",
+      "slotType": "shoulder",
+      "rarity": "rare",
+      "description": "Heavy steel shoulder plates with intricate engravings",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Shoulder_18.png",
+      "stats": {
+        "armor": 12,
+        "attack": 2
+      }
+    }
+  },
+  "consumables": {
+    "health_potion": {
+      "id": "health_potion",
+      "name": "Health Potion",
+      "type": "consumable",
+      "rarity": "common",
+      "description": "Restores 50 health points when consumed",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_15.png",
+      "stackSize": 10,
+      "effects": {
+        "healAmount": 50
+      }
+    },
+    "mana_potion": {
+      "id": "mana_potion",
+      "name": "Mana Potion",
+      "type": "consumable",
+      "rarity": "common",
+      "description": "Restores 30 mana points when consumed",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_25.png",
+      "stackSize": 10,
+      "effects": {
+        "manaAmount": 30
+      }
+    },
+    "strength_elixir": {
+      "id": "strength_elixir",
+      "name": "Strength Elixir",
+      "type": "consumable",
+      "rarity": "uncommon",
+      "description": "Temporarily increases attack damage by 25% for 5 minutes",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_35.png",
+      "stackSize": 5,
+      "effects": {
+        "attackBonus": 25,
+        "duration": 300
+      }
+    },
+    "energy_shield_potion": {
+      "id": "energy_shield_potion",
+      "name": "Energy Shield Potion",
+      "type": "consumable",
+      "rarity": "rare",
+      "description": "Grants 40 points of energy shield protection",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_45.png",
+      "stackSize": 5,
+      "effects": {
+        "shieldAmount": 40
+      }
+    }
+  },
+  "materials": {
+    "iron_ore": {
+      "id": "iron_ore",
+      "name": "Iron Ore",
+      "type": "material",
+      "rarity": "common",
+      "description": "Raw iron ore suitable for smelting into ingots",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_25.png",
+      "stackSize": 50,
+      "craftingValue": 5
+    },
+    "steel_ingot": {
+      "id": "steel_ingot",
+      "name": "Steel Ingot",
+      "type": "material",
+      "rarity": "uncommon",
+      "description": "Refined steel ready for crafting superior weapons",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_35.png",
+      "stackSize": 25,
+      "craftingValue": 15
+    },
+    "magic_crystal": {
+      "id": "magic_crystal",
+      "name": "Magic Crystal",
+      "type": "material",
+      "rarity": "rare",
+      "description": "Crystallized magical energy used in enchanting",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_65.png",
+      "stackSize": 10,
+      "enchantingValue": 25
+    },
+    "dragon_scale": {
+      "id": "dragon_scale",
+      "name": "Dragon Scale",
+      "type": "material",
+      "rarity": "epic",
+      "description": "Incredibly rare scale from an ancient dragon",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_85.png",
+      "stackSize": 5,
+      "craftingValue": 100,
+      "enchantingValue": 75
+    }
+  },
+  "keys": {
+    "bronze_key": {
+      "id": "bronze_key",
+      "name": "Bronze Key",
+      "type": "key",
+      "rarity": "common",
+      "description": "Opens bronze-tier dungeon chests",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_54_key.png",
+      "stackSize": 5,
+      "dungeonTier": 1
+    },
+    "silver_key": {
+      "id": "silver_key",
+      "name": "Silver Key",
+      "type": "key",
+      "rarity": "uncommon",
+      "description": "Opens silver-tier dungeon chests",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_75.png",
+      "stackSize": 3,
+      "dungeonTier": 2
+    },
+    "ice_key": {
+      "id": "ice_key",
+      "name": "Frost Key",
+      "type": "key",
+      "rarity": "rare",
+      "description": "Opens special ice dungeon chambers",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_95.png",
+      "stackSize": 1,
+      "dungeonType": "ice"
+    },
+    "volcanic_key": {
+      "id": "volcanic_key",
+      "name": "Volcanic Key",
+      "type": "key",
+      "rarity": "rare",
+      "description": "Opens special volcanic dungeon chambers",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_105.png",
+      "stackSize": 1,
+      "dungeonType": "fire"
+    },
+    "forest_key": {
+      "id": "forest_key",
+      "name": "Forest Key",
+      "type": "key",
+      "rarity": "rare",
+      "description": "Opens special forest dungeon chambers",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_115.png",
+      "stackSize": 1,
+      "dungeonType": "nature"
+    }
+  }
+}

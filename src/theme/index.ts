@@ -1,4 +1,5 @@
 import { createTheme, type ThemeOptions } from '@mui/material/styles'
+import { fadeIn } from './animations'
 
 const baseTheme: ThemeOptions = {
   typography: {
@@ -88,6 +89,35 @@ const baseTheme: ThemeOptions = {
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '8px',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+          padding: '8px 12px',
+          fontSize: '0.875rem',
+          animation: `${fadeIn} 0.3s ease-in-out`,
+        },
+        arrow: {
+          color: 'rgba(0, 0, 0, 0.95)',
+          '&::before': {
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+          },
+        },
+      },
+      defaultProps: {
+        arrow: true,
+        TransitionProps: {
+          timeout: {
+            enter: 300,
+            exit: 200,
+          },
         },
       },
     },

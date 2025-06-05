@@ -1,0 +1,80 @@
+{
+  "orbs": [
+    {
+      "id": "essence_enchantment",
+      "name": "Essence of Enchantment",
+      "description": "Imbues a normal item with magical properties",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Enchantment/Enchantment_11_magicsubstance.png",
+      "rarity": "common",
+      "effects": {
+        "targetRarity": "normal",
+        "resultRarity": "magic",
+        "affixCount": {
+          "min": 1,
+          "max": 2
+        }
+      },
+      "dropWeight": 100
+    },
+    {
+      "id": "essence_empowerment",
+      "name": "Essence of Empowerment",
+      "description": "Transforms a normal item into a powerful rare",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Enchantment/Enchantment_02_big_magicdust.png",
+      "rarity": "uncommon",
+      "effects": {
+        "targetRarity": "normal",
+        "resultRarity": "rare",
+        "affixCount": {
+          "min": 3,
+          "max": 4
+        }
+      },
+      "dropWeight": 30
+    },
+    {
+      "id": "shard_flux",
+      "name": "Shard of Flux",
+      "description": "Destabilizes and reshapes magical properties",
+      "icon": "/5000FantasyIcons/ProfessionIcons/QuestIcons/Quest_135_crystal.png",
+      "rarity": "common",
+      "effects": {
+        "targetRarity": "magic",
+        "action": "reroll_affixes",
+        "preserveRarity": true
+      },
+      "dropWeight": 85
+    },
+    {
+      "id": "crystal_chaos",
+      "name": "Crystal of Chaos",
+      "description": "Violently restructures a rare item's essence",
+      "icon": "/5000FantasyIcons/ProfessionIcons/QuestIcons/Quest_132_crystal.png",
+      "rarity": "rare",
+      "effects": {
+        "targetRarity": "rare",
+        "action": "reroll_affixes",
+        "preserveRarity": true
+      },
+      "dropWeight": 15
+    },
+    {
+      "id": "rune_ascension",
+      "name": "Rune of Ascension",
+      "description": "Elevates a magic item to rare status while preserving its core",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Enchantment/Enchantment_50_rune_stoune.png",
+      "rarity": "rare",
+      "effects": {
+        "targetRarity": "magic",
+        "resultRarity": "rare",
+        "action": "upgrade_rarity",
+        "preserveAffixes": true,
+        "addAffixCount": {
+          "min": 1,
+          "max": 2
+        }
+      },
+      "dropWeight": 10
+    }
+  ]
+}

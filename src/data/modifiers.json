@@ -1,0 +1,259 @@
+{
+  "prefixes": [
+    {
+      "id": "prefix_sturdy",
+      "name": "Sturdy",
+      "tags": ["life", "defensive"],
+      "tiers": [
+        { "tier": 1, "stat": "maxHp", "value": [5, 10], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "maxHp", "value": [11, 20], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "maxHp", "value": [21, 35], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "maxHp", "value": [36, 50], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "maxHp", "value": [51, 75], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "prefix_sharpened",
+      "name": "Sharpened",
+      "tags": ["physical", "damage", "attack"],
+      "tiers": [
+        { "tier": 1, "stat": "attack", "value": [2, 4], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "attack", "value": [5, 8], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "attack", "value": [9, 14], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "attack", "value": [15, 22], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "attack", "value": [23, 35], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "prefix_reinforced",
+      "name": "Reinforced", 
+      "tags": ["physical", "defensive"],
+      "tiers": [
+        { "tier": 1, "stat": "armor", "value": [5, 10], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "armor", "value": [11, 18], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "armor", "value": [19, 28], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "armor", "value": [29, 40], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "armor", "value": [41, 55], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "prefix_blazing",
+      "name": "Blazing",
+      "tags": ["fire", "elemental", "damage"],
+      "tiers": [
+        { "tier": 1, "stat": "fireDamage", "value": [3, 6], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "fireDamage", "value": [7, 12], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "fireDamage", "value": [13, 20], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "fireDamage", "value": [21, 30], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "fireDamage", "value": [31, 45], "requiredLevel": 45, "weight": 15 }
+      ]
+    },
+    {
+      "id": "prefix_frosted",
+      "name": "Frosted",
+      "tags": ["ice", "elemental", "damage"],
+      "tiers": [
+        { "tier": 1, "stat": "iceDamage", "value": [3, 6], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "iceDamage", "value": [7, 12], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "iceDamage", "value": [13, 20], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "iceDamage", "value": [21, 30], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "iceDamage", "value": [31, 45], "requiredLevel": 45, "weight": 15 }
+      ]
+    },
+    {
+      "id": "prefix_charged",
+      "name": "Charged",
+      "tags": ["lightning", "elemental", "damage"],
+      "tiers": [
+        { "tier": 1, "stat": "lightningDamage", "value": [3, 6], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "lightningDamage", "value": [7, 12], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "lightningDamage", "value": [13, 20], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "lightningDamage", "value": [21, 30], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "lightningDamage", "value": [31, 45], "requiredLevel": 45, "weight": 15 }
+      ]
+    },
+    {
+      "id": "prefix_shadowed",
+      "name": "Shadowed",
+      "tags": ["dark", "elemental", "damage"],
+      "tiers": [
+        { "tier": 1, "stat": "darkDamage", "value": [3, 6], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "darkDamage", "value": [7, 12], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "darkDamage", "value": [13, 20], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "darkDamage", "value": [21, 30], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "darkDamage", "value": [31, 45], "requiredLevel": 45, "weight": 15 }
+      ]
+    },
+    {
+      "id": "prefix_mystic",
+      "name": "Mystic",
+      "tags": ["mana", "caster"],
+      "tiers": [
+        { "tier": 1, "stat": "maxMp", "value": [5, 10], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "maxMp", "value": [11, 20], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "maxMp", "value": [21, 35], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "maxMp", "value": [36, 50], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "maxMp", "value": [51, 75], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "prefix_warded",
+      "name": "Warded",
+      "tags": ["defensive", "caster"],
+      "tiers": [
+        { "tier": 1, "stat": "maxEs", "value": [3, 5], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "maxEs", "value": [6, 10], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "maxEs", "value": [11, 18], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "maxEs", "value": [19, 28], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "maxEs", "value": [29, 40], "requiredLevel": 45, "weight": 15 }
+      ]
+    }
+  ],
+  "suffixes": [
+    {
+      "id": "suffix_of_resistance",
+      "name": "of Resistance",
+      "tags": ["defensive", "resistance"],
+      "tiers": [
+        { "tier": 1, "stat": "allRes", "value": [3, 5], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "allRes", "value": [6, 10], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "allRes", "value": [11, 15], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "allRes", "value": [16, 22], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "allRes", "value": [23, 30], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_the_flame",
+      "name": "of the Flame",
+      "tags": ["fire", "resistance"],
+      "tiers": [
+        { "tier": 1, "stat": "fireRes", "value": [8, 12], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "fireRes", "value": [13, 20], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "fireRes", "value": [21, 30], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "fireRes", "value": [31, 45], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "fireRes", "value": [46, 60], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_the_storm",
+      "name": "of the Storm",
+      "tags": ["lightning", "resistance"],
+      "tiers": [
+        { "tier": 1, "stat": "lightningRes", "value": [8, 12], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "lightningRes", "value": [13, 20], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "lightningRes", "value": [21, 30], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "lightningRes", "value": [31, 45], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "lightningRes", "value": [46, 60], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_the_glacier",
+      "name": "of the Glacier",
+      "tags": ["ice", "resistance"],
+      "tiers": [
+        { "tier": 1, "stat": "iceRes", "value": [8, 12], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "iceRes", "value": [13, 20], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "iceRes", "value": [21, 30], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "iceRes", "value": [31, 45], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "iceRes", "value": [46, 60], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_the_void",
+      "name": "of the Void",
+      "tags": ["dark", "resistance"],
+      "tiers": [
+        { "tier": 1, "stat": "darkRes", "value": [8, 12], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "darkRes", "value": [13, 20], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "darkRes", "value": [21, 30], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "darkRes", "value": [31, 45], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "darkRes", "value": [46, 60], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_evasion",
+      "name": "of Evasion",
+      "tags": ["defensive", "dodge"],
+      "tiers": [
+        { "tier": 1, "stat": "dodge", "value": [2, 4], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "dodge", "value": [5, 8], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "dodge", "value": [9, 14], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "dodge", "value": [15, 22], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "dodge", "value": [23, 30], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_blocking",
+      "name": "of Blocking",
+      "tags": ["defensive", "block"],
+      "validSlots": ["shield"],
+      "tiers": [
+        { "tier": 1, "stat": "block", "value": [3, 5], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "block", "value": [6, 10], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "block", "value": [11, 18], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "block", "value": [19, 28], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "block", "value": [29, 40], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_precision",
+      "name": "of Precision",
+      "tags": ["attack", "critical"],
+      "tiers": [
+        { "tier": 1, "stat": "critChance", "value": [2, 4], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "critChance", "value": [5, 8], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "critChance", "value": [9, 14], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "critChance", "value": [15, 22], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "critChance", "value": [23, 30], "requiredLevel": 45, "weight": 15 }
+      ]
+    },
+    {
+      "id": "suffix_of_devastation",
+      "name": "of Devastation",
+      "tags": ["attack", "critical"],
+      "tiers": [
+        { "tier": 1, "stat": "critMultiplier", "value": [0.1, 0.2], "requiredLevel": 10, "weight": 80 },
+        { "tier": 2, "stat": "critMultiplier", "value": [0.21, 0.35], "requiredLevel": 20, "weight": 60 },
+        { "tier": 3, "stat": "critMultiplier", "value": [0.36, 0.5], "requiredLevel": 30, "weight": 40 },
+        { "tier": 4, "stat": "critMultiplier", "value": [0.51, 0.75], "requiredLevel": 40, "weight": 20 },
+        { "tier": 5, "stat": "critMultiplier", "value": [0.76, 1.0], "requiredLevel": 50, "weight": 10 }
+      ]
+    },
+    {
+      "id": "suffix_of_swiftness",
+      "name": "of Swiftness",
+      "tags": ["speed", "utility"],
+      "tiers": [
+        { "tier": 1, "stat": "speed", "value": [3, 5], "requiredLevel": 1, "weight": 100 },
+        { "tier": 2, "stat": "speed", "value": [6, 10], "requiredLevel": 10, "weight": 80 },
+        { "tier": 3, "stat": "speed", "value": [11, 18], "requiredLevel": 20, "weight": 60 },
+        { "tier": 4, "stat": "speed", "value": [19, 28], "requiredLevel": 30, "weight": 40 },
+        { "tier": 5, "stat": "speed", "value": [29, 40], "requiredLevel": 40, "weight": 20 }
+      ]
+    },
+    {
+      "id": "suffix_of_regeneration",
+      "name": "of Regeneration",
+      "tags": ["life", "defensive"],
+      "tiers": [
+        { "tier": 1, "stat": "hpRegen", "value": [1, 2], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "hpRegen", "value": [3, 5], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "hpRegen", "value": [6, 10], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "hpRegen", "value": [11, 18], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "hpRegen", "value": [19, 30], "requiredLevel": 45, "weight": 15 }
+      ]
+    },
+    {
+      "id": "suffix_of_clarity",
+      "name": "of Clarity",
+      "tags": ["mana", "caster"],
+      "tiers": [
+        { "tier": 1, "stat": "mpRegen", "value": [1, 2], "requiredLevel": 5, "weight": 90 },
+        { "tier": 2, "stat": "mpRegen", "value": [3, 5], "requiredLevel": 15, "weight": 70 },
+        { "tier": 3, "stat": "mpRegen", "value": [6, 10], "requiredLevel": 25, "weight": 50 },
+        { "tier": 4, "stat": "mpRegen", "value": [11, 18], "requiredLevel": 35, "weight": 30 },
+        { "tier": 5, "stat": "mpRegen", "value": [19, 30], "requiredLevel": 45, "weight": 15 }
+      ]
+    }
+  ]
+}

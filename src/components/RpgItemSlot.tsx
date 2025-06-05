@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import { getRpgBackground, getRpgRarityFrame, getRpgFrame } from '../utils/iconHelper'
 import type { ReactNode } from 'react'
+import { transitions, glow } from '../theme/animations'
 
 interface RpgItemSlotProps {
   item?: {
@@ -8,12 +9,15 @@ interface RpgItemSlotProps {
     icon: string
     rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
   }
-  slotType?: 'chest' | 'head' | 'boots' | 'gloves' | 'pants' | 'shoulder' | 'melee' | 'shield' | 'ring' | 'neck' | 'skill' | 'potion'
+  slotType?: 'chest' | 'head' | 'boots' | 'gloves' | 'pants' | 'shoulder' | 'melee' | 'shield' | 'ring' | 'neck' | 'skill' | 'potion' | 'deconstruct'
   size?: number
   onClick?: () => void
   showTooltip?: boolean
   isEmpty?: boolean
   children?: ReactNode
+  onDrop?: (item: any) => void
+  alt?: string
+  sx?: any
 }
 
 const RpgItemSlot = ({ 
@@ -23,7 +27,10 @@ const RpgItemSlot = ({
   onClick,
   showTooltip = true,
   isEmpty = false,
-  children
+  children,
+  onDrop,
+  alt,
+  sx
 }: RpgItemSlotProps) => {
   const rarity = item?.rarity || 'common'
   
@@ -34,26 +41,40 @@ const RpgItemSlot = ({
         width: size,
         height: size,
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'all 0.2s ease',
+        transition: transitions.standard,
         '&:hover': onClick ? {
-          transform: 'scale(1.05)',
-          filter: 'brightness(1.2)',
+          transform: 'scale(1.08) translateY(-2px)',
+          filter: 'brightness(1.3)',
           '& .item-tooltip': {
             opacity: 1,
+            transform: 'translateX(-50%) translateY(0)',
+          },
+          '& .item-frame': {
+            animation: item?.rarity === 'legendary' ? `${glow} 2s ease-in-out infinite` : 'none',
           }
         } : {
           '& .item-tooltip': {
             opacity: 1,
+            transform: 'translateX(-50%) translateY(0)',
           }
         },
+        '&:active': onClick ? {
+          transform: 'scale(1.02)',
+        } : {},
+        ...sx
       }}
       onClick={onClick}
+      onDrop={onDrop ? (e) => {
+        e.preventDefault()
+        if (onDrop) onDrop(e)
+      } : undefined}
+      onDragOver={onDrop ? (e) => e.preventDefault() : undefined}
     >
       {/* Slot background */}
       <Box
         component="img"
         src={getRpgBackground(slotType)}
-        alt={`${slotType} slot`}
+        alt={alt || `${slotType} slot`}
         sx={{
           position: 'absolute',
           width: '100%',
@@ -63,19 +84,23 @@ const RpgItemSlot = ({
         }}
       />
       
-      {/* Item frame based on rarity */}
-      <Box
-        component="img"
-        src={getRpgRarityFrame(rarity, 'round')}
-        alt={`${rarity} frame`}
-        sx={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          zIndex: 2,
-        }}
-      />
+      {/* Item frame based on rarity - only show if item exists */}
+      {item && (
+        <Box
+          component="img"
+          src={getRpgRarityFrame(rarity, 'round')}
+          alt={`${rarity} frame`}
+          className="item-frame"
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 2,
+            transition: transitions.standard,
+          }}
+        />
+      )}
       
       {/* Item icon */}
       {item && (
@@ -148,24 +173,25 @@ const RpgItemSlot = ({
         <Box
           sx={{
             position: 'absolute',
-            bottom: '-30px',
+            bottom: '-35px',
             left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'rgba(0,0,0,0.9)',
+            transform: 'translateX(-50%) translateY(5px)',
+            background: 'rgba(0,0,0,0.95)',
             color: 'white',
-            padding: '4px 8px',
+            padding: '6px 12px',
             borderRadius: '4px',
-            fontSize: '0.7rem',
+            fontSize: '0.75rem',
             whiteSpace: 'nowrap',
             opacity: 0,
-            transition: 'opacity 0.2s ease',
+            transition: transitions.standard,
             zIndex: 10,
             pointerEvents: 'none',
             border: `1px solid ${getRarityColor(rarity)}`,
+            boxShadow: `0 0 10px ${getRarityColor(rarity)}40`,
           }}
           className="item-tooltip"
         >
-          <Typography variant="caption" sx={{ color: getRarityColor(rarity) }}>
+          <Typography variant="caption" sx={{ color: getRarityColor(rarity), fontWeight: 'bold' }}>
             {item.name}
           </Typography>
         </Box>

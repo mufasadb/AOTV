@@ -21,7 +21,11 @@
       "Bash(curl:*)",
       "Bash(npm run preview:*)",
       "Bash(npm start)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(node test_enemies.js)",
+      "Bash(node:*)"
     ],
     "deny": []
   }

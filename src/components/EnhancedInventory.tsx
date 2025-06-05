@@ -33,7 +33,7 @@ const EnhancedInventory = observer(() => {
         }}
       >
         {inventoryStore.inventory.map((item, index) => (
-          <InventorySlot key={item.id} item={item} index={index} />
+          <InventorySlot key={`${item.id}-${index}-${inventoryStore.inventory.length}`} item={item} index={index} />
         ))}
         
         {/* Empty slots */}

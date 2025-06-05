@@ -70,9 +70,25 @@
 * **Affixes:**  
   * Magical properties that enhance items.  
   * **Prefixes & Suffixes:** Distinct pools of mods.  
-  * **Tiered Affixes:** Affixes have multiple tiers (e.g., T1 to T10). Higher tiers are rarer and more powerful.  
+    * **Prefixes:** Focus on primary offensive and defensive stats (e.g., +HP, +Attack, +Elemental Damage, +Armor, +Energy Shield)
+    * **Suffixes:** Focus on resistances, utility, and secondary stats (e.g., Resistances, Dodge, Block, Critical Stats, Speed, Regeneration)
+    * **Magic Items:** Can have 1 prefix and 1 suffix maximum
+    * **Rare Items:** Can have up to 3 prefixes and 3 suffixes (6 total affixes)
+  * **Tiered Affixes:** Affixes have multiple tiers (T1 to T5 currently). Higher tiers are rarer and more powerful.
+    * **T1:** Common tier, available from level 1, weight 100
+    * **T2:** Available from level 10+, weight 80
+    * **T3:** Available from level 20+, weight 60
+    * **T4:** Available from level 30+, weight 40
+    * **T5:** Rare tier, available from level 40+, weight 20
   * **Level Requirements:** Higher tier affixes and base items can only drop in higher-level dungeons/from higher-level monsters.  
-  * **Affix Tags:** Affixes are tagged with categories (e.g., "Fire," "Physical," "Defensive," "Mana," "Attack," "Speed") to allow for targeted meta-crafting.  
+  * **Affix Tags:** Affixes are tagged with categories to allow for targeted meta-crafting:
+    * **Damage Tags:** "physical", "fire", "lightning", "ice", "dark", "elemental", "damage", "attack"
+    * **Defense Tags:** "defensive", "life", "resistance", "block", "dodge"
+    * **Utility Tags:** "mana", "caster", "speed", "utility", "critical"
+  * **Stat Types:**
+    * **Flat Stats:** Direct numerical bonuses (e.g., +25 HP, +10 Attack)
+    * **Percentage Stats:** Multiplicative bonuses (e.g., +15% Fire Resistance, +20% Critical Chance)
+    * **Special Stats:** allRes (all resistances), hpRegen, mpRegen  
 * **Backpack Inventory:** Limited size during dungeon runs (e.g., 10-20 slots).  
 * **Stash Inventory:** Larger storage in town, potentially expandable.
 
@@ -81,13 +97,13 @@
 * **Core Principle:** Transform common loot into powerful gear through a multi-layered system.  
 * **Materials:**  
   * **Item Shards/Essences:** Obtained by breaking down (deconstructing) magic and rare items. Different rarities of items yield different quality/types of shards.  
-  * **Crafting Consumables ("Orbs"):** Found as loot. Each has a specific function.  
-    * *Basic Orbs (examples, names TBD):*  
-      * Orb of Transmutation: Upgrades a normal item to magic.  
-      * Orb of Alteration: Rerolls affixes on a magic item.  
-      * Orb of Augmentation: Adds an affix to a magic item (if space allows).  
-      * Orb of Alchemy: Upgrades a magic item to a rare item with new random affixes.  
-      * Orb of Chaos: Rerolls affixes on a rare item.  
+  * **Crafting Consumables:** Found as loot. Each has a specific function.  
+    * *Basic Crafting Essences & Shards:*  
+      * **Essence of Enchantment:** Imbues a normal (white) item with magical properties, transforming it to magic (blue) with 1-2 random affixes
+      * **Essence of Empowerment:** Transforms a normal (white) item directly into a powerful rare (yellow), adding 3-4 random affixes
+      * **Shard of Flux:** Destabilizes and reshapes the magical properties of a magic item, rerolling all affixes while preserving rarity
+      * **Crystal of Chaos:** Violently restructures a rare item's essence, rerolling all affixes while preserving rarity
+      * **Rune of Ascension:** Elevates a magic item to rare status, keeping existing affixes and adding 1-2 more  
   * **Elemental/Thematic Fragments:** Tiered fragments (e.g., Fire, Ice, Dark) used in specific crafting recipes or meta-crafting.  
 * **Deconstruction:** Breaking down unwanted items for crafting materials.  
 * **Meta-Crafting:** Advanced crafting options, often using rarer orbs obtained from specific content:  

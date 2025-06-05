@@ -5,32 +5,32 @@ import {
   CardContent, 
   Avatar,
   Chip,
-  Divider
+  Tooltip,
+  Paper,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Fade
 } from '@mui/material'
 import { 
   Shield, 
   GpsFixed as Attack, 
-  Favorite, 
   Psychology,
-  LocalFireDepartment,
-  Visibility
+  Visibility,
+  ExpandMore
 } from '@mui/icons-material'
 import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
-import { getWeaponIcon, getArmorIcon, getMedievalIcon } from '../utils/iconHelper'
-import { combatStore, type CombatStats } from '../stores/CombatStore'
+import { getMedievalIcon } from '../utils/iconHelper'
+import { combatStore } from '../stores/CombatStore'
+import { playerStore } from '../stores/PlayerStore'
 import RpgProgressBar from './RpgProgressBar'
 import RpgButton from './RpgButton'
-import RpgItemSlot from './RpgItemSlot'
 import FloatingDamage from './FloatingDamage'
+import CharacterDoll from './CharacterDoll'
+import EnhancedDragDrop from './EnhancedDragDrop'
+import { transitions, shake, glow } from '../theme/animations'
 
-// Mock player equipment for display
-const mockPlayerEquipment = {
-  weapon: 'Iron Sword',
-  shield: 'Wooden Shield',
-  helmet: 'Leather Cap',
-  chest: 'Chain Mail',
-}
 
 interface CombatViewProps {
   onNavigateToTown: () => void
@@ -43,7 +43,7 @@ const EnemySlot = ({
   onSelect,
   animationState 
 }: { 
-  enemy?: { id: string | number, name: string, hp: number, maxHp: number, position: string, intent: string }, 
+  enemy?: import('../stores/CombatStore').CombatEntity, 
   position: { x: number, y: number },
   isSelected: boolean,
   onSelect: () => void,
@@ -83,23 +83,145 @@ const EnemySlot = ({
     }
   }
 
+  const createEnemyTooltip = () => {
+    if (!enemy) return null
+
+    // Calculate middle damage value
+    const baseDamage = enemy.stats.damage
+    const critMultiplier = enemy.stats.critMultiplier || 1.0
+    const averageDamage = Math.floor(baseDamage + (baseDamage * (critMultiplier - 1) * (enemy.stats.critChance / 100)))
+
+    return (
+      <Paper sx={{ p: 2, maxWidth: 280, bgcolor: 'rgba(0,0,0,0.9)' }}>
+        <Typography variant="h6" sx={{ color: 'warning.main', mb: 1 }}>
+          {enemy.name}
+        </Typography>
+        
+        {/* Attack Info */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" sx={{ color: 'error.main', mb: 0.5 }}>
+            {(enemy.intent || 'Attack').charAt(0).toUpperCase() + (enemy.intent || 'attack').slice(1)}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'warning.main', fontWeight: 'bold' }}>
+            ~{averageDamage} {enemy.stats.damageType} damage
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            {enemy.stats.critChance}% crit chance
+          </Typography>
+        </Box>
+
+        {/* Combat Stats */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Combat Stats</Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5 }}>
+            <Typography variant="caption">Armor: {enemy.stats.armor}</Typography>
+            <Typography variant="caption">Dodge: {enemy.stats.dodge}%</Typography>
+            <Typography variant="caption">Block: {enemy.stats.block}%</Typography>
+            <Typography variant="caption">Crit: {enemy.stats.critChance}%</Typography>
+          </Box>
+        </Box>
+
+        {/* Resistances */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Resistances</Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5 }}>
+            <Typography variant="caption" sx={{ color: '#dc2626' }}>
+              Fire: {enemy.stats.fireRes}%
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#2563eb' }}>
+              Lightning: {enemy.stats.lightningRes}%
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#0891b2' }}>
+              Ice: {enemy.stats.iceRes}%
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#7c2d12' }}>
+              Dark: {enemy.stats.darkRes}%
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Health Info */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Health</Typography>
+          <Typography variant="caption">
+            {enemy.stats.hp}/{enemy.stats.maxHp} HP
+          </Typography>
+          {enemy.stats.es > 0 && (
+            <Typography variant="caption" display="block">
+              {enemy.stats.es}/{enemy.stats.maxEs} ES
+            </Typography>
+          )}
+          {enemy.stats.mp > 0 && (
+            <Typography variant="caption" display="block">
+              {enemy.stats.mp}/{enemy.stats.maxMp} MP
+            </Typography>
+          )}
+        </Box>
+
+        {/* Tactical Info */}
+        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <Typography variant="caption" sx={{ color: 'info.main', fontStyle: 'italic' }}>
+            💡 Tips: {enemy.stats.dodge > 15 ? 'High dodge - hard to hit! ' : ''}
+            {enemy.stats.armor > 20 ? 'Heavy armor - use elemental damage! ' : ''}
+            {enemy.stats.critChance > 20 ? 'High crit chance - be careful! ' : ''}
+            {enemy.stats.es > 0 ? 'Has energy shield - hits shield first! ' : ''}
+          </Typography>
+        </Box>
+      </Paper>
+    )
+  }
+
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        left: `${position.x}%`,
-        top: `${position.y}%`,
-        transform: getAnimationTransform(),
-        cursor: enemy ? 'pointer' : 'default',
-        transition: 'all 0.3s ease-out',
-        '&:hover': enemy ? {
-          filter: 'brightness(1.2)',
-        } : {},
+    <Tooltip
+      title={enemy ? createEnemyTooltip() : ''}
+      placement="right"
+      arrow
+      componentsProps={{
+        tooltip: {
+          sx: {
+            bgcolor: 'transparent',
+            maxWidth: 'none',
+            p: 0,
+          }
+        },
+        popper: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, 8],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                padding: 16,
+                boundary: 'viewport',
+              },
+            },
+          ],
+        }
       }}
-      onClick={enemy ? onSelect : undefined}
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          left: `${position.x}%`,
+          top: `${position.y}%`,
+          transform: getAnimationTransform(),
+          cursor: enemy ? 'pointer' : 'default',
+          transition: transitions.elastic,
+          animation: animationState === 'hit' ? `${shake} 0.3s` : 'none',
+          '&:hover': enemy ? {
+            filter: 'brightness(1.2)',
+            transform: `${getAnimationTransform()} scale(1.05)`,
+          } : {},
+        }}
+        onClick={enemy ? onSelect : undefined}
+      >
       {enemy ? (
-        <Box sx={{ textAlign: 'center' }}>
+        <Fade in={true} timeout={800}>
+          <Box sx={{ textAlign: 'center' }}>
           {/* Intent Indicator */}
           <Box sx={{ mb: 1, height: 20 }}>
             {getIntentIcon(enemy.intent)}
@@ -122,6 +244,8 @@ const EnemySlot = ({
               outline: isSelected ? '2px solid' : 'none',
               outlineColor: 'warning.main',
               outlineOffset: '2px',
+              animation: isSelected ? `${glow} 2s ease-in-out infinite` : 'none',
+              transition: transitions.standard,
             }}
           >
             {!getEnemyImage(enemy.name) && enemy.name.split(' ').map((word: string) => word[0]).join('')}
@@ -133,17 +257,18 @@ const EnemySlot = ({
               {enemy.name}
             </Typography>
             <RpgProgressBar
-              value={enemy.hp}
-              maxValue={enemy.maxHp}
+              value={enemy.stats.hp}
+              maxValue={enemy.stats.maxHp}
               type="health"
               width={80}
               height={8}
             />
             <Typography variant="caption" sx={{ fontSize: '0.6rem' }}>
-              {enemy.hp}/{enemy.maxHp}
+              {enemy.stats.hp}/{enemy.stats.maxHp}
             </Typography>
           </Box>
-        </Box>
+          </Box>
+        </Fade>
       ) : (
         <Box
           sx={{
@@ -162,7 +287,8 @@ const EnemySlot = ({
           Empty
         </Box>
       )}
-    </Box>
+      </Box>
+    </Tooltip>
   )
 }
 
@@ -170,26 +296,8 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
   // Initialize combat if not already started
   useEffect(() => {
     if (!combatStore.isInCombat) {
-      // Mock player stats
-      const playerStats: CombatStats = {
-        hp: 85,
-        maxHp: 100,
-        mp: 25,
-        maxMp: 50,
-        es: 15,
-        maxEs: 20,
-        armor: 12,
-        fireRes: 10,
-        lightningRes: 5,
-        iceRes: 8,
-        darkRes: 15,
-        dodge: 8,
-        block: 15,
-        critChance: 15,
-        critMultiplier: 1.5,
-        damage: 18,
-        damageType: 'physical'
-      }
+      // Use player stats from PlayerStore
+      const playerStats = playerStore.combatStats
 
       // Mock enemy data with proper stats
       const enemyData = [
@@ -255,7 +363,8 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
   ]
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex' }}>
+    <EnhancedDragDrop>
+      <Box sx={{ height: '100vh', display: 'flex' }}>
       {/* Main Combat Area */}
       <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         {/* Arena Background */}
@@ -319,14 +428,7 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
             return (
               <EnemySlot
                 key={index}
-                enemy={enemy ? {
-                  id: enemy.id,
-                  name: enemy.name,
-                  hp: enemy.stats.hp,
-                  maxHp: enemy.stats.maxHp,
-                  position: 'back',
-                  intent: enemy.intent || 'attack'
-                } : undefined}
+                enemy={enemy}
                 position={position}
                 isSelected={enemy ? combatStore.selectedTargetId === enemy.id : false}
                 onSelect={() => enemy && combatStore.selectTarget(enemy.id)}
@@ -410,172 +512,111 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
         </Box>
       </Box>
 
-      {/* Player Stats & Inventory Sidebar */}
+      {/* Player Equipment & Info Sidebar */}
       <Box sx={{ width: 320, borderLeft: '1px solid', borderColor: 'divider' }}>
         <Card sx={{ height: '100%', borderRadius: 0, border: 'none' }}>
           <CardContent sx={{ p: 2, height: '100%', overflow: 'auto' }}>
-            {/* Player Vitals */}
-            <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-              Player Status
-            </Typography>
+            <Typography variant="h6" gutterBottom>Player Status</Typography>
             
-            <Box sx={{ mb: 3 }}>
-              {/* Health */}
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <Favorite sx={{ fontSize: 16, color: 'error.main' }} />
-                  <Typography variant="body2" fontWeight="bold">Health</Typography>
-                  <Typography variant="caption">
-                    {combatStore.player?.stats.hp || 0}/{combatStore.player?.stats.maxHp || 0}
-                  </Typography>
-                </Box>
-                <RpgProgressBar
-                  value={combatStore.player?.stats.hp || 0}
-                  maxValue={combatStore.player?.stats.maxHp || 1}
-                  type="health"
-                  width={280}
-                  height={12}
-                />
-              </Box>
-
-              {/* Mana */}
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <Psychology sx={{ fontSize: 16, color: 'info.main' }} />
-                  <Typography variant="body2" fontWeight="bold">Mana</Typography>
-                  <Typography variant="caption">
-                    {combatStore.player?.stats.mp || 0}/{combatStore.player?.stats.maxMp || 0}
-                  </Typography>
-                </Box>
-                <RpgProgressBar
-                  value={combatStore.player?.stats.mp || 0}
-                  maxValue={combatStore.player?.stats.maxMp || 1}
-                  type="mana"
-                  width={280}
-                  height={12}
-                />
-              </Box>
-
-              {/* Energy Shield */}
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <LocalFireDepartment sx={{ fontSize: 16, color: 'warning.main' }} />
-                  <Typography variant="body2" fontWeight="bold">Energy Shield</Typography>
-                  <Typography variant="caption">
-                    {combatStore.player?.stats.es || 0}/{combatStore.player?.stats.maxEs || 0}
-                  </Typography>
-                </Box>
-                <RpgProgressBar
-                  value={combatStore.player?.stats.es || 0}
-                  maxValue={combatStore.player?.stats.maxEs || 1}
-                  type="energy"
-                  width={280}
-                  height={12}
-                />
-              </Box>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            {/* Combat Stats */}
-            <Typography variant="subtitle2" gutterBottom>Combat Stats</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-              <Chip icon={<Shield />} label={`Armor: ${combatStore.player?.stats.armor || 0}`} size="small" />
-              <Chip icon={<Visibility />} label={`Dodge: ${combatStore.player?.stats.dodge || 0}%`} size="small" />
-              <Chip icon={<Attack />} label={`Damage: ${combatStore.player?.stats.damage || 0}`} size="small" />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            {/* Combat Log */}
-            <Typography variant="subtitle2" gutterBottom>Combat Log</Typography>
-            <Box sx={{ 
-              height: 120, 
-              overflow: 'auto', 
-              border: '1px solid', 
-              borderColor: 'divider', 
-              borderRadius: 1, 
-              p: 1,
-              mb: 2,
-              backgroundColor: 'rgba(0,0,0,0.2)'
-            }}>
-              {combatStore.combatLog.map((message, index) => (
-                <Typography 
-                  key={index} 
-                  variant="caption" 
-                  display="block" 
-                  sx={{ 
-                    mb: 0.5, 
-                    fontSize: '0.7rem',
-                    opacity: index === combatStore.combatLog.length - 1 ? 1 : 0.7
-                  }}
-                >
-                  {message}
+            {/* Player Health/Mana/ES */}
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>Health</Typography>
+                <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
+                  {playerStore.vitals.hp}/{playerStore.calculateTotalStat('maxHp')}
                 </Typography>
-              ))}
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            {/* Equipment */}
-            <Typography variant="subtitle2" gutterBottom>Equipment</Typography>
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <RpgItemSlot
-                    item={{
-                      name: mockPlayerEquipment.weapon,
-                      icon: getWeaponIcon('sword', 15),
-                      rarity: 'uncommon'
-                    }}
-                    slotType="melee"
-                    size={48}
-                  />
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Weapon</Typography>
-                </Box>
-                <Box sx={{ textAlign: 'center' }}>
-                  <RpgItemSlot
-                    item={{
-                      name: mockPlayerEquipment.shield,
-                      icon: getWeaponIcon('shield', 25),
-                      rarity: 'common'
-                    }}
-                    slotType="shield"
-                    size={48}
-                  />
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Shield</Typography>
-                </Box>
-                <Box sx={{ textAlign: 'center' }}>
-                  <RpgItemSlot
-                    item={{
-                      name: mockPlayerEquipment.helmet,
-                      icon: getArmorIcon('helmet', 12),
-                      rarity: 'rare'
-                    }}
-                    slotType="head"
-                    size={48}
-                  />
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Helmet</Typography>
-                </Box>
-                <Box sx={{ textAlign: 'center' }}>
-                  <RpgItemSlot
-                    item={{
-                      name: mockPlayerEquipment.chest,
-                      icon: getArmorIcon('chest', 8),
-                      rarity: 'uncommon'
-                    }}
-                    slotType="chest"
-                    size={48}
-                  />
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Chest</Typography>
-                </Box>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>Mana</Typography>
+                <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
+                  {playerStore.vitals.mp}/{playerStore.calculateTotalStat('maxMp')}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>Energy Shield</Typography>
+                <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
+                  {playerStore.vitals.es}/{playerStore.calculateTotalStat('maxEs')}
+                </Typography>
               </Box>
             </Box>
+            
+            {/* Character Equipment - Always Visible */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" gutterBottom>Equipment</Typography>
+              <CharacterDoll />
+            </Box>
+
+            {/* Combat Stats - Collapsible */}
+            <Accordion sx={{ mb: 1, bgcolor: 'transparent', boxShadow: 'none' }}>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                sx={{ 
+                  minHeight: 40, 
+                  '& .MuiAccordionSummary-content': { my: 1 },
+                  border: '1px solid rgba(139, 69, 19, 0.3)',
+                  borderRadius: 1,
+                  mb: 1
+                }}
+              >
+                <Typography variant="subtitle2">Combat Stats</Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ pt: 0 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  <Chip icon={<Shield />} label={`Armor: ${playerStore.calculateTotalStat('armor')}`} size="small" />
+                  <Chip icon={<Visibility />} label={`Dodge: ${playerStore.calculateTotalStat('dodge')}%`} size="small" />
+                  <Chip icon={<Attack />} label={`Damage: ${playerStore.calculateTotalStat('attack')}`} size="small" />
+                  <Chip label={`Crit: ${playerStore.calculateTotalStat('critChance')}%`} size="small" />
+                  <Chip label={`Block: ${playerStore.calculateTotalStat('block')}%`} size="small" />
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Combat Log - Collapsible */}
+            <Accordion sx={{ bgcolor: 'transparent', boxShadow: 'none' }}>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                sx={{ 
+                  minHeight: 40, 
+                  '& .MuiAccordionSummary-content': { my: 1 },
+                  border: '1px solid rgba(139, 69, 19, 0.3)',
+                  borderRadius: 1
+                }}
+              >
+                <Typography variant="subtitle2">Combat Log</Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ pt: 0 }}>
+                <Box sx={{ 
+                  height: 120, 
+                  overflow: 'auto', 
+                  border: '1px solid', 
+                  borderColor: 'divider', 
+                  borderRadius: 1, 
+                  p: 1,
+                  backgroundColor: 'rgba(0,0,0,0.2)'
+                }}>
+                  {combatStore.combatLog.map((message, index) => (
+                    <Typography 
+                      key={index} 
+                      variant="caption" 
+                      display="block" 
+                      sx={{ 
+                        mb: 0.5, 
+                        fontSize: '0.7rem',
+                        opacity: index === combatStore.combatLog.length - 1 ? 1 : 0.7
+                      }}
+                    >
+                      {message}
+                    </Typography>
+                  ))}
+                </Box>
+              </AccordionDetails>
+            </Accordion>
 
           </CardContent>
         </Card>
       </Box>
-    </Box>
+      </Box>
+    </EnhancedDragDrop>
   )
 })
 

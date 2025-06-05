@@ -4,6 +4,7 @@ import {
   DndContext, 
   DragOverlay, 
   closestCenter,
+  rectIntersection,
   PointerSensor,
   useSensor,
   useSensors,
@@ -13,7 +14,7 @@ import type {
   DragEndEvent,
   DragOverEvent,
 } from '@dnd-kit/core'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { inventoryStore } from '../stores/InventoryStore'
 import type { InventoryItem } from '../stores/InventoryStore'
 import RpgItemSlot from './RpgItemSlot'
@@ -32,6 +33,7 @@ interface EnhancedDragDropProps {
 const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
   const [draggedItem, setDraggedItem] = useState<DraggedItemInfo | null>(null)
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 })
+  const [contextKey, setContextKey] = useState(0)
   const dragOverlayRef = useRef<HTMLDivElement>(null)
 
   const sensors = useSensors(
@@ -58,39 +60,21 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
-    const item = inventoryStore.getItemById(active.id as string)
     
-    if (!item) return
+    // Get the data from the draggable element
+    const dragData = active.data.current
+    if (!dragData || !dragData.item) {
+      return
+    }
 
-    // Determine source location
-    let sourceInfo: DraggedItemInfo
-    
-    // Check if item is in inventory
-    const inventoryIndex = inventoryStore.inventory.findIndex(i => i.id === item.id)
-    if (inventoryIndex !== -1) {
-      sourceInfo = {
-        item,
-        sourceType: 'inventory',
-        sourceIndex: inventoryIndex
-      }
-    }
-    // Check if item is in stash
-    else if (inventoryStore.stash.some(i => i.id === item.id)) {
-      sourceInfo = {
-        item,
-        sourceType: 'stash'
-      }
-    }
-    // Check if item is equipped
-    else {
-      const equippedSlot = Object.entries(inventoryStore.equipped).find(([, equippedItem]) => 
-        equippedItem?.id === item.id
-      )
-      sourceInfo = {
-        item,
-        sourceType: 'equipped',
-        sourceSlot: equippedSlot?.[0]
-      }
+    const item = dragData.item
+
+    // Use the source info from the drag data
+    const sourceInfo: DraggedItemInfo = {
+      item,
+      sourceType: dragData.sourceType,
+      sourceIndex: dragData.sourceIndex,
+      sourceSlot: dragData.sourceSlot
     }
 
     setDraggedItem(sourceInfo)
@@ -105,15 +89,37 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
     const isValidDrop = validateDropTarget(draggedItem.item, dropData)
     
     // You could add CSS classes here for visual feedback
-    console.log('Drag over:', over.id, 'Valid:', isValidDrop)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { over } = event
     
-    if (!draggedItem || !over) {
-      // Return to original position (fallback)
+    // Always ensure cleanup happens regardless of drop outcome
+    const forceCleanup = () => {
       setDraggedItem(null)
+      setDragPosition({ x: 0, y: 0 })
+      
+      // If this was an invalid drop, force remount the DndContext to reset everything
+      if (!over || !validateDropTarget(draggedItem?.item, over.data.current)) {
+        setTimeout(() => {
+          setContextKey(prev => prev + 1)
+        }, 50)
+      }
+      
+      // Standard cleanup
+      setTimeout(() => {
+        setDraggedItem(null)
+        setDragPosition({ x: 0, y: 0 })
+      }, 0)
+    }
+    
+    if (!draggedItem) {
+      forceCleanup()
+      return
+    }
+
+    if (!over) {
+      forceCleanup()
       return
     }
 
@@ -121,14 +127,16 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
     const isValidDrop = validateDropTarget(draggedItem.item, dropData)
 
     if (!isValidDrop) {
-      // Return to original position (fallback)
-      setDraggedItem(null)
+      // Invalid drop - ensure same cleanup as valid drops
+      forceCleanup()
       return
     }
 
     // Handle the drop based on target type
     handleValidDrop(draggedItem, dropData)
-    setDraggedItem(null)
+    
+    // Valid drop - same cleanup
+    forceCleanup()
   }
 
   const validateDropTarget = (item: InventoryItem, dropData: any): boolean => {
@@ -184,20 +192,17 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
           // Move from inventory to stash
           inventoryStore.moveToStash(item.id)
         } else if (sourceType === 'equipped' && sourceSlot) {
-          // Unequip to stash
-          inventoryStore.unequipItem(sourceSlot)
-          inventoryStore.moveToStash(item.id)
+          // Unequip directly to stash
+          inventoryStore.unequipToStash(sourceSlot)
         }
         break
 
       case 'equipment-slot':
         if (sourceType === 'inventory') {
-          // Equip from inventory
           inventoryStore.equipItem(item.id)
         } else if (sourceType === 'stash') {
           // Move from stash to inventory first, then equip
           inventoryStore.moveToInventory(item.id)
-          // Note: In a real implementation, you might want to defer this
           setTimeout(() => inventoryStore.equipItem(item.id), 0)
         } else if (sourceType === 'equipped' && sourceSlot && targetSlot && sourceSlot !== targetSlot) {
           // Swap equipment slots (if both items are compatible)
@@ -216,8 +221,9 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
 
   return (
     <DndContext
+      key={contextKey}
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={rectIntersection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}

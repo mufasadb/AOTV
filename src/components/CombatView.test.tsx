@@ -24,9 +24,9 @@ describe('CombatView', () => {
   it('shows combat stats', () => {
     renderWithTheme(<CombatView onNavigateToTown={() => {}} />)
     expect(screen.getByText('Combat Stats')).toBeInTheDocument()
-    expect(screen.getByText(/Armor:/)).toBeInTheDocument()
-    expect(screen.getByText(/Dodge:/)).toBeInTheDocument()
-    expect(screen.getByText(/Damage:/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Armor:/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Dodge:/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Damage:/).length).toBeGreaterThan(0)
   })
 
   it('displays equipment information', () => {

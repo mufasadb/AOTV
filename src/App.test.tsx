@@ -61,7 +61,7 @@ describe('App', () => {
     
     // Click Combat tab
     await user.click(screen.getByRole('tab', { name: 'Combat' }))
-    expect(screen.getByText('Player Status')).toBeInTheDocument()
+    expect(screen.getByText(/Your Turn|Enemy Turn/)).toBeInTheDocument()
     expect(screen.getAllByText('Goblin Warrior').length).toBeGreaterThan(0)
     
     // Click back to Town tab

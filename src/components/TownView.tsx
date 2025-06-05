@@ -6,7 +6,10 @@ import {
   Tabs, 
   Tab,
   Avatar,
-  Chip
+  Chip,
+  Tooltip,
+  Button,
+  Fade
 } from '@mui/material'
 import { 
   Inventory, 
@@ -18,31 +21,27 @@ import {
 import { useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { getProfessionIcon, getLootIcon } from '../utils/iconHelper'
+import { playerStore } from '../stores/PlayerStore'
+import { materialsStore } from '../stores/MaterialsStore'
 import RpgButton from './RpgButton'
 import EnhancedDragDrop from './EnhancedDragDrop'
 import EnhancedInventory from './EnhancedInventory'
 import CharacterDoll from './CharacterDoll'
 import StashOverlay from './StashOverlay'
-
-const mockPlayerData = {
-  name: 'Adventurer',
-  level: 12,
-  hp: 85,
-  maxHp: 100,
-  mp: 25,
-  maxMp: 50,
-  gold: 2450,
-  keys: 3,
-  craftingMats: 18,
-}
+import CraftingBenchOverlay from './CraftingBenchOverlay'
+import DeconstructionOverlay from './DeconstructionOverlay'
+import { transitions } from '../theme/animations'
 
 interface TownViewProps {
   onNavigateToCombat: () => void
 }
 
+
 const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
   const [activeTab, setActiveTab] = useState(0)
   const [stashOpen, setStashOpen] = useState(false)
+  const [craftingOpen, setCraftingOpen] = useState(false)
+  const [deconstructOpen, setDeconstructOpen] = useState(false)
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -52,105 +51,180 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
     switch (activeTab) {
       case 0: // Items
         return (
-          <Box>
-            <Typography variant="subtitle2" gutterBottom>Equipment Slots</Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, mb: 3 }}>
-              {['Weapon', 'Shield', 'Helmet', 'Chest', 'Gloves', 'Boots'].map((slot) => (
-                <Box 
-                  key={slot}
-                  sx={{
-                    aspectRatio: '1',
-                    border: '2px solid',
-                    borderColor: 'primary.main',
-                    borderRadius: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    p: 1,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      backgroundColor: 'rgba(139, 69, 19, 0.1)',
-                      transform: 'scale(1.02)',
-                    }
-                  }}
-                >
-                  <Typography variant="caption" fontWeight="bold">{slot}</Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                    {slot === 'Weapon' ? 'Iron Sword' : slot === 'Shield' ? 'Wood Shield' : 'Empty'}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-            
+          <Fade in={true} timeout={600}>
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
+              <Box sx={{ flex: 1, maxWidth: 350 }}>
                 <CharacterDoll />
               </Box>
               <Box sx={{ flex: 1 }}>
                 <EnhancedInventory />
               </Box>
             </Box>
-          </Box>
+          </Fade>
         )
       case 1: // Stats
         return (
-          <Box>
-            <Box sx={{ mb: 2 }}>
+          <Fade in={true} timeout={600}>
+            <Box>
+              <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle2" gutterBottom>Character Info</Typography>
               <Chip 
                 avatar={<Person />} 
-                label={`${mockPlayerData.name} (Level ${mockPlayerData.level})`} 
+                label={`${playerStore.playerInfo.name} (Level ${playerStore.playerInfo.level})`} 
                 sx={{ mb: 2 }}
               />
             </Box>
             
             <Typography variant="subtitle2" gutterBottom>Vital Stats</Typography>
             <Box sx={{ mb: 2 }}>
-              <Typography variant="body2">Health: {mockPlayerData.hp}/{mockPlayerData.maxHp}</Typography>
-              <Typography variant="body2">Mana: {mockPlayerData.mp}/{mockPlayerData.maxMp}</Typography>
-              <Typography variant="body2" color="warning.main">Gold: {mockPlayerData.gold}</Typography>
+              <Typography variant="body2">Health: {playerStore.vitals.hp}/{playerStore.calculateTotalStat('maxHp')}</Typography>
+              <Typography variant="body2">Mana: {playerStore.vitals.mp}/{playerStore.calculateTotalStat('maxMp')}</Typography>
+              <Typography variant="body2" color="warning.main">Gold: {playerStore.playerInfo.gold}</Typography>
             </Box>
             
             <Typography variant="subtitle2" gutterBottom>Combat Stats</Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Chip label="Attack: 15-22" size="small" />
-              <Chip label="Armor: 12" size="small" />
-              <Chip label="Dodge: 8%" size="small" />
-              <Chip label="Crit: 15%" size="small" />
+              <Tooltip title="Physical damage dealt to enemies" arrow>
+                <Chip label={`Attack: ${playerStore.calculateTotalStat('attack')}`} size="small" sx={{ cursor: 'help' }} />
+              </Tooltip>
+              <Tooltip title="Reduces physical damage taken" arrow>
+                <Chip label={`Armor: ${playerStore.calculateTotalStat('armor')}`} size="small" sx={{ cursor: 'help' }} />
+              </Tooltip>
+              <Tooltip title="Chance to completely avoid incoming damage" arrow>
+                <Chip label={`Dodge: ${playerStore.calculateTotalStat('dodge')}%`} size="small" sx={{ cursor: 'help' }} />
+              </Tooltip>
+              <Tooltip title="Chance to block physical attacks (shields only)" arrow>
+                <Chip label={`Block: ${playerStore.calculateTotalStat('block')}%`} size="small" sx={{ cursor: 'help' }} />
+              </Tooltip>
+              <Tooltip title="Affects attack frequency and movement" arrow>
+                <Chip label={`Speed: ${playerStore.calculateTotalStat('speed')}`} size="small" sx={{ cursor: 'help' }} />
+              </Tooltip>
             </Box>
-          </Box>
+            
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>Resistances</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              <Tooltip title="Reduces fire damage taken" arrow>
+                <Chip label={`Fire: ${playerStore.calculateTotalStat('fireRes')}%`} size="small" sx={{ cursor: 'help', bgcolor: 'rgba(220, 38, 38, 0.1)' }} />
+              </Tooltip>
+              <Tooltip title="Reduces lightning damage taken" arrow>
+                <Chip label={`Lightning: ${playerStore.calculateTotalStat('lightningRes')}%`} size="small" sx={{ cursor: 'help', bgcolor: 'rgba(59, 130, 246, 0.1)' }} />
+              </Tooltip>
+              <Tooltip title="Reduces ice damage taken" arrow>
+                <Chip label={`Ice: ${playerStore.calculateTotalStat('iceRes')}%`} size="small" sx={{ cursor: 'help', bgcolor: 'rgba(14, 165, 233, 0.1)' }} />
+              </Tooltip>
+              <Tooltip title="Reduces dark/chaos damage taken" arrow>
+                <Chip label={`Dark: ${playerStore.calculateTotalStat('darkRes')}%`} size="small" sx={{ cursor: 'help', bgcolor: 'rgba(139, 69, 19, 0.1)' }} />
+              </Tooltip>
+            </Box>
+            
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>Critical Stats</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              <Tooltip title="Chance to deal critical damage" arrow>
+                <Chip label={`Crit Chance: ${playerStore.calculateTotalStat('critChance')}%`} size="small" sx={{ cursor: 'help', bgcolor: 'rgba(234, 179, 8, 0.1)' }} />
+              </Tooltip>
+              <Tooltip title="Multiplier for critical hit damage" arrow>
+                <Chip label={`Crit Multi: ${playerStore.calculateTotalStat('critMultiplier').toFixed(1)}x`} size="small" sx={{ cursor: 'help', bgcolor: 'rgba(234, 179, 8, 0.1)' }} />
+              </Tooltip>
+            </Box>
+            </Box>
+          </Fade>
         )
       case 2: // Crafting Mats
         return (
-          <Box>
-            <Typography variant="subtitle2" gutterBottom>Materials ({mockPlayerData.craftingMats})</Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1 }}>
-              {['Iron Ore', 'Leather', 'Magic Dust', 'Gems'].map((material) => (
-                <Box 
-                  key={material}
-                  sx={{ 
-                    textAlign: 'center', 
-                    p: 1, 
-                    border: '1px solid', 
-                    borderColor: 'divider', 
-                    borderRadius: 1 
+          <Fade in={true} timeout={600}>
+            <Box>
+            <Typography variant="subtitle2" gutterBottom>
+              Materials ({materialsStore.uniqueMaterialCount} types, {materialsStore.totalMaterialCount} total)
+            </Typography>
+            
+            {materialsStore.allMaterials.length === 0 ? (
+              <Box sx={{ 
+                textAlign: 'center', 
+                py: 4, 
+                color: 'text.secondary',
+                border: '2px dashed',
+                borderColor: 'divider',
+                borderRadius: 1
+              }}>
+                <Typography variant="body2">
+                  No materials yet. Deconstruct magic or rare items to gather crafting materials.
+                </Typography>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 2 }}>
+                {materialsStore.allMaterials.map((stack) => (
+                  <Box 
+                    key={stack.material.id}
+                    sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      p: 1.5, 
+                      border: '1px solid', 
+                      borderColor: 'divider', 
+                      borderRadius: 1,
+                      bgcolor: 'background.paper',
+                      '&:hover': {
+                        bgcolor: 'action.hover'
+                      }
+                    }}
+                  >
+                    {/* Material Icon */}
+                    <Box
+                      component="img"
+                      src={stack.material.icon}
+                      alt={stack.material.name}
+                      sx={{ 
+                        width: 32, 
+                        height: 32, 
+                        objectFit: 'contain',
+                        filter: stack.material.rarity === 'rare' ? 'hue-rotate(60deg)' : 'none'
+                      }}
+                    />
+                    
+                    {/* Material Info */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="caption" display="block" sx={{ fontWeight: 'bold' }}>
+                        {stack.material.name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                        x{stack.quantity}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                        {stack.material.category}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            )}
+            
+            {/* Add some starter materials button for testing */}
+            {materialsStore.allMaterials.length === 0 && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Button 
+                  variant="outlined" 
+                  size="small"
+                  onClick={() => {
+                    materialsStore.addMaterials({
+                      'magic_dust': 5,
+                      'iron_ore': 3,
+                      'leather_scraps': 2
+                    })
                   }}
                 >
-                  <Typography variant="caption" display="block">{material}</Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    {Math.floor(Math.random() * 20) + 1}
-                  </Typography>
-                </Box>
-              ))}
+                  Add Starter Materials (Debug)
+                </Button>
+              </Box>
+            )}
             </Box>
-          </Box>
+          </Fade>
         )
       case 3: // Keys
         return (
-          <Box>
-            <Typography variant="subtitle2" gutterBottom>Dungeon Keys ({mockPlayerData.keys})</Typography>
+          <Fade in={true} timeout={600}>
+            <Box>
+            <Typography variant="subtitle2" gutterBottom>Dungeon Keys ({playerStore.playerInfo.keys})</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {['Forest Crypt Key', 'Volcanic Cave Key', 'Ice Temple Key'].map((key, index) => (
                 <Box 
@@ -180,7 +254,8 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                 </Box>
               ))}
             </Box>
-          </Box>
+            </Box>
+          </Fade>
         )
       default:
         return null
@@ -226,9 +301,16 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
             Adventurer's Haven
           </Typography>
           
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, maxWidth: 1000, mx: 'auto' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3, maxWidth: 1200, mx: 'auto' }}>
             {/* Stash */}
-            <Card sx={{ cursor: 'pointer', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-4px)' } }}>
+            <Card sx={{ 
+              cursor: 'pointer', 
+              transition: transitions.standard, 
+              '&:hover': { 
+                transform: 'translateY(-4px) scale(1.02)', 
+                boxShadow: '0 8px 24px rgba(0,0,0,0.4)' 
+              } 
+            }}>
               <CardContent sx={{ textAlign: 'center', p: 3 }}>
                 <Box
                   component="img"
@@ -259,8 +341,27 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Forge and enhance equipment with your materials
                 </Typography>
-                <RpgButton fullWidth>
+                <RpgButton fullWidth onClick={() => setCraftingOpen(true)}>
                   Start Crafting
+                </RpgButton>
+              </CardContent>
+            </Card>
+
+            {/* Deconstruction */}
+            <Card sx={{ cursor: 'pointer', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-4px)' } }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Box
+                  component="img"
+                  src={getProfessionIcon('enchantment', 11)}
+                  alt="deconstruction"
+                  sx={{ width: 48, height: 48, mb: 2, objectFit: 'contain' }}
+                />
+                <Typography variant="h6" gutterBottom>Deconstruction</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Break down items for crafting materials
+                </Typography>
+                <RpgButton fullWidth onClick={() => setDeconstructOpen(true)}>
+                  Deconstruct Items
                 </RpgButton>
               </CardContent>
             </Card>
@@ -288,7 +389,7 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
       </Box>
 
       {/* Player Panel */}
-      <Box sx={{ width: 400, borderLeft: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ width: '50%', borderLeft: '1px solid', borderColor: 'divider' }}>
         <Card sx={{ height: '100%', borderRadius: 0, border: 'none' }}>
           <CardContent sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Player Header */}
@@ -298,15 +399,15 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                   <Person sx={{ fontSize: 32 }} />
                 </Avatar>
                 <Box>
-                  <Typography variant="h6">{mockPlayerData.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">Level {mockPlayerData.level}</Typography>
-                  <Typography variant="caption" color="warning.main">💰 {mockPlayerData.gold} Gold</Typography>
+                  <Typography variant="h6">{playerStore.playerInfo.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">Level {playerStore.playerInfo.level}</Typography>
+                  <Typography variant="caption" color="warning.main">💰 {playerStore.playerInfo.gold} Gold</Typography>
                 </Box>
               </Box>
               
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Chip icon={<VpnKey />} label={`${mockPlayerData.keys} Keys`} size="small" />
-                <Chip icon={<Build />} label={`${mockPlayerData.craftingMats} Mats`} size="small" />
+                <Chip icon={<VpnKey />} label={`${playerStore.playerInfo.keys} Keys`} size="small" />
+                <Chip icon={<Build />} label={`${playerStore.playerInfo.craftingMats} Mats`} size="small" />
               </Box>
             </Box>
 
@@ -335,6 +436,12 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
 
       {/* Stash Overlay */}
       <StashOverlay open={stashOpen} onClose={() => setStashOpen(false)} />
+      
+      {/* Crafting Bench Overlay */}
+      <CraftingBenchOverlay open={craftingOpen} onClose={() => setCraftingOpen(false)} />
+      
+      {/* Deconstruction Overlay */}
+      <DeconstructionOverlay open={deconstructOpen} onClose={() => setDeconstructOpen(false)} />
       </Box>
     </EnhancedDragDrop>
   )

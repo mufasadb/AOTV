@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { enemySystem } from '../systems/EnemySystem'
 
 export type DamageType = 'physical' | 'fire' | 'lightning' | 'ice' | 'dark'
 
@@ -442,13 +443,20 @@ class CombatStore {
   }
 
   generateNextFight() {
-    // This would generate new enemies based on dungeon type
-    // For now, just reset the same enemies with full HP
+    // Generate new enemies using the enemy system
+    this.enemies = enemySystem.generateEnemyEncounter({
+      enemyCount: Math.floor(Math.random() * 3) + 1, // 1-3 enemies
+      tierWeights: {
+        '1': 50,
+        '2': 35, 
+        '3': 15
+      }
+    })
+    
+    // Initialize enemy animations
+    this.enemyAnimations = {}
     this.enemies.forEach(enemy => {
-      enemy.stats.hp = enemy.stats.maxHp
-      enemy.stats.es = enemy.stats.maxEs
-      enemy.isBlocking = false
-      enemy.intent = this.getRandomIntent()
+      this.enemyAnimations[enemy.id] = 'idle'
     })
     
     this.turnPhase = 'player'
@@ -469,7 +477,7 @@ class CombatStore {
   applyDeathPenalty() {
     // This would integrate with InventoryStore to remove random items
     // Implementation depends on how inventory system is structured
-    console.log('Death penalty applied - random item removed')
+    // TODO: Implement actual death penalty logic
   }
 }
 

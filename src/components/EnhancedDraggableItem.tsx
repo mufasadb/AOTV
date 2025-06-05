@@ -18,6 +18,8 @@ const EnhancedDraggableItem = ({
   sourceSlot, 
   size = 64 
 }: EnhancedDraggableItemProps) => {
+  const draggableId = `${item.id}-${sourceType}`
+  
   const {
     attributes,
     listeners,
@@ -25,7 +27,7 @@ const EnhancedDraggableItem = ({
     transform,
     isDragging,
   } = useDraggable({ 
-    id: item.id,
+    id: draggableId,
     data: {
       type: `${sourceType}-item`,
       item,
@@ -34,6 +36,7 @@ const EnhancedDraggableItem = ({
       sourceSlot,
     }
   })
+
 
   const style = {
     transform: CSS.Transform.toString(transform),

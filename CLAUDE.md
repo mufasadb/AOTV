@@ -7,6 +7,8 @@
 2. **Review PP.md** to understand the current project phase and specific task requirements
 3. **Align all work** with the project's design principles
 4. **Confirm request is complete before considering complete** unless explictly asked to turn the server off, ensure the dev server is running, and that it returns a response on localhost:5173 and that it has an expected response before considering something "complete" 
+5. **Stay on task** Resist implimenting code that strays from the given task. Don't leave TODO's for behaviour to do with this feature to impliment later, impliment things to completion
+6. **use TDD** write tests to confirm behaviour both functional and actual user experience to confirm functionality works as intended. for each task, write a test to confirm its working, but also keep a list of required end to end testing to the main expected behaviour thats run before returning work to the user.
 
 
 ## Project Overview
@@ -164,6 +166,4 @@ src/
 2. **Small Commits**: Keep commits focused and atomic
 3. **Type Safety**: Ensure all TypeScript errors are resolved
 4. **Component Isolation**: Build reusable, self-contained components
-5. **Performance**: Consider render optimization for game-critical components
-
 ---

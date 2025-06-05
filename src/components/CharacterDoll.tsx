@@ -2,7 +2,8 @@ import { observer } from 'mobx-react-lite'
 import { Box, Typography } from '@mui/material'
 import { useDroppable } from '@dnd-kit/core'
 import { inventoryStore } from '../stores/InventoryStore'
-import RpgItemSlot from './RpgItemSlot'
+import EnhancedDraggableItem from './EnhancedDraggableItem'
+import { transitions } from '../theme/animations'
 
 interface EquipmentSlotProps {
   slotType: string
@@ -35,22 +36,38 @@ const EquipmentSlot = observer(({ slotType, label, position }: EquipmentSlotProp
         border: isOver ? '2px solid #4ade80' : '2px dashed rgba(139, 69, 19, 0.5)',
         borderRadius: 2,
         background: isOver ? 'rgba(74, 222, 128, 0.1)' : 'rgba(139, 69, 19, 0.05)',
-        transition: 'all 0.2s ease',
+        transition: transitions.standard,
+        transform: isOver ? 'scale(1.05)' : 'scale(1)',
+        boxShadow: isOver ? '0 0 20px rgba(74, 222, 128, 0.4)' : 'none',
+        '&:hover': {
+          borderColor: equippedItem ? 'primary.main' : 'rgba(139, 69, 19, 0.7)',
+          background: equippedItem ? 'rgba(212, 175, 55, 0.1)' : 'rgba(139, 69, 19, 0.1)',
+        },
       }}
     >
       {equippedItem ? (
-        <RpgItemSlot
+        <EnhancedDraggableItem
+          key={`equipped-${equippedItem.id}-${slotType}`}
           item={equippedItem}
-          slotType={slotType as any}
+          sourceType="equipped"
+          sourceSlot={slotType}
           size={64}
-          showTooltip={true}
         />
       ) : (
-        <RpgItemSlot
-          slotType={slotType as any}
-          size={64}
-          isEmpty={true}
-        />
+        <Box sx={{
+          width: 64,
+          height: 64,
+          border: '2px dashed rgba(139, 69, 19, 0.5)',
+          borderRadius: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(139, 69, 19, 0.05)',
+          fontSize: '0.7rem',
+          color: 'text.disabled'
+        }}>
+          Empty
+        </Box>
       )}
       <Typography variant="caption" sx={{ fontSize: '0.7rem', textAlign: 'center' }}>
         {label}
@@ -77,12 +94,9 @@ const CharacterDoll = observer(() => {
         ref={setNodeRef}
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gridTemplateRows: 'repeat(4, 1fr)',
-          gap: 1,
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 2,
           width: '100%',
-          maxWidth: 400,
-          aspectRatio: '5/4',
           p: 2,
           border: isOver ? '2px solid #4ade80' : '2px solid rgba(139, 69, 19, 0.3)',
           borderRadius: 3,
@@ -90,60 +104,48 @@ const CharacterDoll = observer(() => {
           transition: 'all 0.2s ease',
         }}
       >
-        {/* Head slot - top center */}
+        {/* Left Column */}
         <EquipmentSlot
           slotType="head"
           label="Head"
-          position={{ gridColumn: '3', gridRow: '1' }}
+          position={{ gridColumn: '1', gridRow: '1' }}
         />
-
-        {/* Shoulder slots - top left and right */}
-        <EquipmentSlot
-          slotType="shoulder"
-          label="Shoulders"
-          position={{ gridColumn: '2', gridRow: '2' }}
-        />
-
-        {/* Main hand weapon - left side */}
-        <EquipmentSlot
-          slotType="melee"
-          label="Weapon"
-          position={{ gridColumn: '1', gridRow: '2' }}
-        />
-
-        {/* Chest - center */}
         <EquipmentSlot
           slotType="chest"
           label="Chest"
-          position={{ gridColumn: '3', gridRow: '2' }}
+          position={{ gridColumn: '1', gridRow: '2' }}
         />
-
-        {/* Off-hand/Shield - right side */}
-        <EquipmentSlot
-          slotType="shield"
-          label="Shield"
-          position={{ gridColumn: '5', gridRow: '2' }}
-        />
-
-        {/* Gloves - left and right of chest */}
-        <EquipmentSlot
-          slotType="gloves"
-          label="Gloves"
-          position={{ gridColumn: '4', gridRow: '2' }}
-        />
-
-        {/* Pants - below chest */}
         <EquipmentSlot
           slotType="pants"
           label="Pants"
-          position={{ gridColumn: '3', gridRow: '3' }}
+          position={{ gridColumn: '1', gridRow: '3' }}
         />
-
-        {/* Boots - bottom center */}
         <EquipmentSlot
           slotType="boots"
           label="Boots"
-          position={{ gridColumn: '3', gridRow: '4' }}
+          position={{ gridColumn: '1', gridRow: '4' }}
+        />
+
+        {/* Right Column */}
+        <EquipmentSlot
+          slotType="melee"
+          label="Weapon"
+          position={{ gridColumn: '2', gridRow: '1' }}
+        />
+        <EquipmentSlot
+          slotType="shield"
+          label="Shield"
+          position={{ gridColumn: '2', gridRow: '2' }}
+        />
+        <EquipmentSlot
+          slotType="gloves"
+          label="Gloves"
+          position={{ gridColumn: '2', gridRow: '3' }}
+        />
+        <EquipmentSlot
+          slotType="shoulder"
+          label="Shoulders"
+          position={{ gridColumn: '2', gridRow: '4' }}
         />
       </Box>
 

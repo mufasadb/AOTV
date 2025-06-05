@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import { Box, Typography, Button, IconButton, Tooltip, Tabs, Tab } from '@mui/material'
+import { Box, Typography, Button, IconButton, Tooltip, Tabs, Tab, Fade } from '@mui/material'
 import { Brightness4, Brightness7 } from '@mui/icons-material'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
@@ -9,6 +9,7 @@ import { darkTheme, lightTheme } from './theme'
 import TownView from './components/TownView'
 import CombatView from './components/CombatView'
 import RewardModal from './components/RewardModal'
+import PlayerStatsBar from './components/PlayerStatsBar'
 
 const App = observer(() => {
   const currentTheme = gameStore.isDarkMode ? darkTheme : lightTheme
@@ -28,14 +29,20 @@ const App = observer(() => {
   }
 
   const renderCurrentView = () => {
-    switch (currentView) {
-      case 0:
-        return <TownView onNavigateToCombat={navigateToCombat} />
-      case 1:
-        return <CombatView onNavigateToTown={navigateToTown} />
-      default:
-        return <TownView onNavigateToCombat={navigateToCombat} />
-    }
+    return (
+      <>
+        <Fade in={currentView === 0} timeout={500} unmountOnExit>
+          <Box sx={{ height: '100%' }}>
+            <TownView onNavigateToCombat={navigateToCombat} />
+          </Box>
+        </Fade>
+        <Fade in={currentView === 1} timeout={500} unmountOnExit>
+          <Box sx={{ height: '100%' }}>
+            <CombatView onNavigateToTown={navigateToTown} />
+          </Box>
+        </Fade>
+      </>
+    )
   }
 
   if (!gameStore.isInitialized) {
@@ -142,7 +149,7 @@ const App = observer(() => {
           borderRadius: 2,
           border: '1px solid',
           borderColor: 'primary.main',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}>
           <Tabs 
             value={currentView} 
@@ -166,8 +173,11 @@ const App = observer(() => {
           </Tabs>
         </Box>
 
+        {/* Player Stats Bar */}
+        <PlayerStatsBar />
+
         {/* Main Content */}
-        <Box sx={{ height: '100vh' }}>
+        <Box sx={{ height: '100vh', paddingTop: '60px' }}>
           {renderCurrentView()}
         </Box>
 

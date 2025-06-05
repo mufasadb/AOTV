@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
-import { getWeaponIcon, getArmorIcon, getLootIcon, getProfessionIcon } from '../utils/iconHelper'
+import { itemSystem } from '../systems/ItemSystem'
 
-export interface InventoryItem {
+export interface Item {
   id: string
   name: string
   icon: string
@@ -12,15 +12,18 @@ export interface InventoryItem {
   stats?: { [key: string]: number }
 }
 
+// Alias for backward compatibility
+export type InventoryItem = Item
+
 class InventoryStore {
   // Player inventory (backpack)
-  inventory: InventoryItem[] = []
+  inventory: Item[] = []
   
   // Stash storage
-  stash: InventoryItem[] = []
+  stash: Item[] = []
   
   // Equipped items
-  equipped: { [slotType: string]: InventoryItem | null } = {
+  equipped: { [slotType: string]: Item | null } = {
     melee: null,
     shield: null,
     head: null,
@@ -36,92 +39,47 @@ class InventoryStore {
     this.initializeTestItems()
   }
 
-  // Initialize with some test items for drag-drop testing
+  // Getter for backpack (alias for inventory)
+  get backpack() {
+    return this.inventory
+  }
+
+  // Initialize with some test items using ItemSystem
   initializeTestItems() {
-    this.inventory = [
-      {
-        id: 'sword-1',
-        name: 'Iron Sword',
-        icon: getWeaponIcon('sword', 15),
-        rarity: 'uncommon',
-        type: 'weapon',
-        slotType: 'melee',
-        description: 'A sturdy iron blade',
-        stats: { attack: 12, speed: 8 }
-      },
-      {
-        id: 'helmet-1',
-        name: 'Leather Cap',
-        icon: getArmorIcon('helmet', 12),
-        rarity: 'common',
-        type: 'armor',
-        slotType: 'head',
-        description: 'Basic head protection',
-        stats: { armor: 3, dodge: 2 }
-      },
-      {
-        id: 'potion-1',
-        name: 'Health Potion',
-        icon: getProfessionIcon('alchemy', 5),
-        rarity: 'common',
-        type: 'consumable',
-        description: 'Restores 50 HP'
-      },
-      {
-        id: 'axe-1',
-        name: 'War Axe',
-        icon: getWeaponIcon('axe', 22),
-        rarity: 'rare',
-        type: 'weapon',
-        slotType: 'melee',
-        description: 'Heavy two-handed axe',
-        stats: { attack: 18, speed: 4 }
-      },
-      {
-        id: 'chest-1',
-        name: 'Chain Mail',
-        icon: getArmorIcon('chest', 8),
-        rarity: 'uncommon',
-        type: 'armor',
-        slotType: 'chest',
-        description: 'Interlocked metal rings',
-        stats: { armor: 8, dodge: -2 }
-      },
-      {
-        id: 'material-1',
-        name: 'Iron Ore',
-        icon: getLootIcon(45),
-        rarity: 'common',
-        type: 'material',
-        description: 'Raw iron for crafting'
-      },
-      {
-        id: 'shield-1',
-        name: 'Wooden Shield',
-        icon: getWeaponIcon('shield', 25),
-        rarity: 'common',
-        type: 'weapon',
-        slotType: 'shield',
-        description: 'Basic wooden protection',
-        stats: { armor: 4, block: 15 }
-      },
-      {
-        id: 'boots-1',
-        name: 'Speed Boots',
-        icon: getArmorIcon('boots', 46),
-        rarity: 'rare',
-        type: 'armor',
-        slotType: 'boots',
-        description: 'Enchanted for swift movement',
-        stats: { dodge: 8, speed: 12 }
-      }
+    // Generate items from the item system
+    const testItemIds = [
+      'iron_sword',
+      'leather_cap', 
+      'health_potion',
+      'war_axe',
+      'chain_mail',
+      'iron_ore',
+      'wooden_shield',
+      'speed_boots'
     ]
 
+    this.inventory = []
+    for (const itemId of testItemIds) {
+      const item = itemSystem.generateInventoryItem(itemId)
+      if (item) {
+        this.inventory.push(item)
+      }
+    }
+
     // Start with some items equipped for demonstration
-    this.equipped.melee = this.inventory[0] // Iron Sword
-    this.equipped.shield = this.inventory[6] // Wooden Shield
-    this.equipped.head = this.inventory[1] // Leather Cap
-    this.equipped.chest = this.inventory[4] // Chain Mail
+    // Use equipItem() method to properly move items from inventory to equipped
+    if (this.inventory.length >= 4) {
+      // Find and equip specific items by their base type
+      const swordItem = this.inventory.find(item => item.name === 'Iron Sword')
+      const helmetItem = this.inventory.find(item => item.name === 'Leather Cap')
+      const chestItem = this.inventory.find(item => item.name === 'Chain Mail')
+      const shieldItem = this.inventory.find(item => item.name === 'Wooden Shield')
+
+      if (swordItem) this.equipItem(swordItem.id)
+      if (helmetItem) this.equipItem(helmetItem.id)
+      if (chestItem) this.equipItem(chestItem.id)
+      if (shieldItem) this.equipItem(shieldItem.id)
+    }
   }
 
   // Move item within inventory (reordering)
@@ -175,8 +133,22 @@ class InventoryStore {
     }
   }
 
+  // Remove item from inventory by item object
+  removeItem(item: Item) {
+    this.inventory = this.inventory.filter(invItem => invItem.id !== item.id)
+  }
+
+  // Unequip item directly to stash
+  unequipToStash(slotType: string) {
+    const item = this.equipped[slotType]
+    if (item) {
+      this.equipped[slotType] = null
+      this.stash.push(item)
+    }
+  }
+
   // Get item by ID from any location
-  getItemById(itemId: string): InventoryItem | null {
+  getItemById(itemId: string): Item | null {
     // Check inventory
     let item = this.inventory.find(item => item.id === itemId)
     if (item) return item
