@@ -8,22 +8,32 @@ import {
   Box,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  Grid
 } from '@mui/material'
+import RpgItemSlot from './RpgItemSlot'
+import type { AnyItem } from '../types/ItemTypes'
+
+export interface DungeonRewards {
+  gold: number
+  items: (string | AnyItem)[] // Support both strings and item objects for backward compatibility
+  experience?: number
+}
 
 interface RewardModalProps {
   open: boolean
   onClose: () => void
+  rewards?: DungeonRewards
 }
 
-const RewardModal = ({ open, onClose }: RewardModalProps) => {
-  // Placeholder reward data
-  const mockRewards = [
-    'Rusty Sword (+2 Attack)',
-    'Leather Boots (+1 Defense)',
-    'Health Potion',
-    'Iron Ore (Crafting Material)'
-  ]
+const RewardModal = ({ open, onClose, rewards }: RewardModalProps) => {
+  const defaultRewards: DungeonRewards = {
+    gold: 0,
+    items: [],
+    experience: 0
+  }
+  
+  const actualRewards = rewards || defaultRewards
 
   return (
     <Dialog 
@@ -50,27 +60,103 @@ const RewardModal = ({ open, onClose }: RewardModalProps) => {
           Combat Rewards
         </Typography>
         
+        {/* Gold Reward */}
         <Box sx={{ 
           border: '1px solid', 
-          borderColor: 'divider', 
+          borderColor: 'warning.main', 
           borderRadius: 1, 
           p: 2,
-          backgroundColor: 'background.paper'
+          mb: 2,
+          backgroundColor: 'rgba(255, 193, 7, 0.1)'
         }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Items Found:
+          <Typography variant="h6" sx={{ color: 'warning.main', textAlign: 'center' }}>
+            💰 {actualRewards.gold} Gold
           </Typography>
-          <List dense>
-            {mockRewards.map((reward, index) => (
-              <ListItem key={index} sx={{ py: 0.5 }}>
-                <ListItemText 
-                  primary={reward}
-                  primaryTypographyProps={{ variant: 'body2' }}
-                />
-              </ListItem>
-            ))}
-          </List>
         </Box>
+
+        {/* Items Reward */}
+        {actualRewards.items.length > 0 && (
+          <Box sx={{ 
+            border: '1px solid', 
+            borderColor: 'divider', 
+            borderRadius: 1, 
+            p: 2,
+            backgroundColor: 'background.paper'
+          }}>
+            <Typography variant="subtitle2" gutterBottom>
+              Items Found:
+            </Typography>
+            
+            {/* Display item objects with icons in a grid */}
+            <Grid container spacing={2} sx={{ mb: 2 }}>
+              {actualRewards.items
+                .filter(item => typeof item === 'object' && item !== null)
+                .map((item, index) => {
+                  const itemObj = item as AnyItem
+                  return (
+                    <Grid item key={index}>
+                      <Box sx={{ textAlign: 'center' }}>
+                        <RpgItemSlot
+                          item={{
+                            name: itemObj.name,
+                            icon: itemObj.icon,
+                            rarity: itemObj.type === 'equipment' ? itemObj.rarity : 'common'
+                          }}
+                          size={48}
+                          showTooltip={true}
+                        />
+                        <Typography 
+                          variant="caption" 
+                          sx={{ 
+                            display: 'block', 
+                            mt: 0.5, 
+                            maxWidth: 60, 
+                            overflow: 'hidden', 
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {itemObj.name}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )
+                })}
+            </Grid>
+            
+            {/* Fallback for string items (backward compatibility) */}
+            {actualRewards.items.some(item => typeof item === 'string') && (
+              <List dense>
+                {actualRewards.items
+                  .filter(item => typeof item === 'string')
+                  .map((item, index) => (
+                    <ListItem key={`string-${index}`} sx={{ py: 0.5 }}>
+                      <ListItemText 
+                        primary={item as string}
+                        primaryTypographyProps={{ variant: 'body2' }}
+                      />
+                    </ListItem>
+                  ))}
+              </List>
+            )}
+          </Box>
+        )}
+
+        {/* No items message */}
+        {actualRewards.items.length === 0 && (
+          <Box sx={{ 
+            border: '1px solid', 
+            borderColor: 'divider', 
+            borderRadius: 1, 
+            p: 2,
+            backgroundColor: 'background.paper',
+            textAlign: 'center'
+          }}>
+            <Typography variant="body2" color="text.secondary">
+              No items found this time. Better luck next dungeon!
+            </Typography>
+          </Box>
+        )}
         
         <Typography variant="caption" display="block" sx={{ mt: 2, textAlign: 'center' }}>
           These items have been added to your backpack

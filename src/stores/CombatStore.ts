@@ -81,6 +81,19 @@ class CombatStore {
   currentFight = 1
   totalFights = 5 // Default dungeon length
   
+  // Dungeon rewards tracking
+  dungeonRewards = {
+    gold: 0,
+    items: [] as string[]
+  }
+  
+  // Fight rewards tracking (for individual fights)
+  fightRewards = {
+    gold: 0,
+    items: [] as any[]
+  }
+  showRewardModal = false
+  
   // Combat log for feedback
   combatLog: string[] = []
   
@@ -94,7 +107,98 @@ class CombatStore {
     makeAutoObservable(this)
   }
 
-  // Initialize combat with player and enemies
+  // Initialize a dungeon run with tier-based enemy generation
+  initializeDungeon(playerStats: CombatStats, dungeonTier: number = 1) {
+    this.currentFight = 1
+    this.totalFights = 5
+    this.isInCombat = true
+    
+    // Reset dungeon rewards
+    this.dungeonRewards = { gold: 0, items: [] }
+    this.showRewardModal = false
+    
+    // Ensure PlayerStore has full vitals before getting stats - import at top level to avoid circular dependency issues
+    
+    // Store player stats but ensure they start with full health/mana/ES
+    this.player = {
+      id: 'player',
+      name: 'Player',
+      stats: { 
+        ...playerStats,
+        // Reset to full vitals when entering dungeon
+        hp: playerStats.maxHp,
+        mp: playerStats.maxMp,
+        es: playerStats.maxEs
+      },
+      isBlocking: false,
+      abilities: []
+    }
+
+    // Generate first fight with tier-based enemy generation
+    this.generateFightForTier(dungeonTier)
+    
+    this.turnPhase = 'player'
+    this.currentEnemyIndex = 0
+    this.selectedTargetId = this.enemies.length > 0 ? this.enemies[0].id : null
+    this.combatLog = ['Dungeon entered! Prepare for battle!']
+  }
+
+  // Generate enemies for current fight based on tier
+  generateFightForTier(tier: number) {
+    // Enemy count based on tier: Tier 1 = mostly 1 enemy, Tier 2 = 1-2, Tier 3 = 2-3
+    let enemyCount: number
+    const random = Math.random()
+    
+    switch(tier) {
+      case 1:
+        // Tier 1: 85% chance of 1 enemy, 15% chance of 2
+        enemyCount = random < 0.85 ? 1 : 2
+        break
+      case 2:
+        // Tier 2: 40% chance of 1, 50% chance of 2, 10% chance of 3
+        if (random < 0.40) enemyCount = 1
+        else if (random < 0.90) enemyCount = 2
+        else enemyCount = 3
+        break
+      case 3:
+        // Tier 3: 20% chance of 2, 60% chance of 3, 20% chance of 4
+        if (random < 0.20) enemyCount = 2
+        else if (random < 0.80) enemyCount = 3
+        else enemyCount = 4
+        break
+      default:
+        enemyCount = 1
+    }
+
+    // Generate enemies with tier weights
+    const tierWeights: { [tier: string]: number } = {}
+    
+    // Focus heavily on the current tier, with small chances for adjacent tiers
+    for (let i = 1; i <= 3; i++) {
+      if (i === tier) {
+        tierWeights[i.toString()] = 70
+      } else if (Math.abs(i - tier) === 1) {
+        tierWeights[i.toString()] = 15
+      } else {
+        tierWeights[i.toString()] = 0
+      }
+    }
+
+    this.enemies = enemySystem.generateEnemyEncounter({
+      enemyCount,
+      tierWeights
+    })
+    
+    // Initialize enemy animations
+    this.enemyAnimations = {}
+    this.enemies.forEach(enemy => {
+      this.enemyAnimations[enemy.id] = 'idle'
+    })
+    
+    this.addToCombatLog(`Fight ${this.currentFight} begins! Facing ${this.enemies.length} enemies.`)
+  }
+
+  // Initialize combat with player and enemies (legacy method)
   startCombat(playerStats: CombatStats, enemyData: Array<{name: string, stats: CombatStats, abilities?: CombatAbility[]}>) {
     this.player = {
       id: 'player',
@@ -147,11 +251,27 @@ class CombatStore {
       this.applyDamage(target, result)
       this.addToCombatLog(`Player attacks ${target.name} for ${result.actualDamage} damage${result.wasCrit ? ' (CRIT!)' : ''}`)
       
-      // Return enemy to idle after animation
+      // Return enemy to idle after animation and check for victory/target switching
       setTimeout(() => {
         this.enemyAnimations[target.id] = 'idle'
+        
+        // Check victory condition
+        if (this.checkVictoryCondition()) {
+          return // Victory handled, exit early
+        }
+        
+        // If current target died, select next valid target
+        if (target.stats.hp <= 0) {
+          this.selectNextValidTarget()
+        }
+        
         this.isProcessingTurn = false
-        this.endPlayerTurn()
+        
+        // Only end player turn if there are still enemies alive
+        const aliveEnemies = this.enemies.filter(e => e.stats.hp > 0)
+        if (aliveEnemies.length > 0) {
+          this.endPlayerTurn()
+        }
       }, 600) // Time for return animation
     }, 300) // Time for hit animation
   }
@@ -235,11 +355,8 @@ class CombatStore {
     }
     
     // All enemies have attacked, check victory condition
-    const aliveEnemies = this.enemies.filter(e => e.stats.hp > 0)
-    if (aliveEnemies.length === 0) {
-      this.turnPhase = 'victory'
-      this.addToCombatLog('All enemies defeated!')
-      return
+    if (this.checkVictoryCondition()) {
+      return // Victory handled
     }
     
     // Reset for next turn
@@ -261,14 +378,8 @@ class CombatStore {
       }
     })
     
-    // Auto-select first alive enemy if current target is dead
-    if (this.selectedTargetId) {
-      const currentTarget = this.enemies.find(e => e.id === this.selectedTargetId)
-      if (!currentTarget || currentTarget.stats.hp <= 0) {
-        const firstAlive = this.enemies.find(e => e.stats.hp > 0)
-        this.selectedTargetId = firstAlive?.id || null
-      }
-    }
+    // Auto-select first alive enemy if current target is dead or no target selected
+    this.selectNextValidTarget()
   }
 
   // Damage calculation following GDD rules
@@ -362,6 +473,8 @@ class CombatStore {
     if (result.actualDamage > 0) {
       target.stats.hp = Math.max(0, target.stats.hp - result.actualDamage)
     }
+    
+    // If target is player, sync will be handled by the UI layer to avoid circular dependencies
   }
 
   // Utility methods
@@ -427,13 +540,62 @@ class CombatStore {
     this.floatingDamages = this.floatingDamages.filter(damage => damage.id !== damageId)
   }
 
+  // Collect rewards from defeated enemies in current fight
+  collectFightRewards() {
+    this.fightRewards = { gold: 0, items: [] }
+    
+    // Estimate player level from their stats (temporary solution)
+    const playerLevel = this.player ? Math.max(1, Math.floor((this.player.stats.maxHp + this.player.stats.attack) / 10)) : 10
+    
+    this.enemies.forEach(enemy => {
+      if (enemy.stats.hp <= 0) {
+        const loot = enemySystem.generateEnemyLoot(enemy.id, playerLevel)
+        this.fightRewards.gold += loot.gold
+        this.fightRewards.items.push(...loot.items)
+        
+        // Also add to dungeon total
+        this.dungeonRewards.gold += loot.gold
+        this.dungeonRewards.items.push(...loot.items)
+      }
+    })
+  }
+  
+  // Check victory condition and handle fight completion
+  checkVictoryCondition(): boolean {
+    const aliveEnemies = this.enemies.filter(e => e.stats.hp > 0)
+    if (aliveEnemies.length === 0) {
+      // Collect loot from all defeated enemies in this fight
+      this.collectFightRewards()
+      
+      this.turnPhase = 'victory'
+      this.showRewardModal = true // Show rewards after each fight
+      this.addToCombatLog('All enemies defeated!')
+      return true
+    }
+    return false
+  }
+  
+  // Select next valid target when current target dies
+  selectNextValidTarget() {
+    const currentTarget = this.selectedTargetId ? this.enemies.find(e => e.id === this.selectedTargetId) : null
+    
+    // If current target is dead or no target selected, find first alive enemy
+    if (!this.selectedTargetId || !currentTarget || currentTarget.stats.hp <= 0) {
+      const firstAlive = this.enemies.find(e => e.stats.hp > 0)
+      this.selectedTargetId = firstAlive?.id || null
+    }
+  }
+
   // Progress to next fight or end dungeon
   nextFight() {
+    // Hide reward modal from previous fight
+    this.showRewardModal = false
+    
     this.currentFight++
     
     if (this.currentFight > this.totalFights) {
-      // Dungeon complete - return to town
-      this.endCombat()
+      // Dungeon complete - show final rewards
+      this.showRewardModal = true
       return 'dungeon_complete'
     } else {
       // Generate new enemies for next fight
@@ -442,27 +604,19 @@ class CombatStore {
     }
   }
 
+  // Close reward modal and return to town
+  closeRewardModal() {
+    this.showRewardModal = false
+    this.endCombat()
+  }
+
   generateNextFight() {
-    // Generate new enemies using the enemy system
-    this.enemies = enemySystem.generateEnemyEncounter({
-      enemyCount: Math.floor(Math.random() * 3) + 1, // 1-3 enemies
-      tierWeights: {
-        '1': 50,
-        '2': 35, 
-        '3': 15
-      }
-    })
-    
-    // Initialize enemy animations
-    this.enemyAnimations = {}
-    this.enemies.forEach(enemy => {
-      this.enemyAnimations[enemy.id] = 'idle'
-    })
+    // Use tier 1 by default for now, could be configurable based on dungeon type
+    this.generateFightForTier(1)
     
     this.turnPhase = 'player'
     this.currentEnemyIndex = 0
     this.selectedTargetId = this.enemies.length > 0 ? this.enemies[0].id : null
-    this.addToCombatLog(`Fight ${this.currentFight} begins!`)
   }
 
   endCombat() {
@@ -470,8 +624,19 @@ class CombatStore {
     this.player = null
     this.enemies = []
     this.currentFight = 1
+    this.totalFights = 1
     this.combatLog = []
+    this.turnPhase = 'player'
+    this.selectedTargetId = null
+    this.currentEnemyIndex = 0
+    this.isProcessingTurn = false
+    this.enemyAnimations = {}
+    this.floatingDamages = []
+    this.dungeonRewards = { gold: 0, items: [] }
+    this.fightRewards = { gold: 0, items: [] }
+    this.showRewardModal = false
   }
+  
 
   // Death penalty - remove random item
   applyDeathPenalty() {
@@ -481,4 +646,5 @@ class CombatStore {
   }
 }
 
+export { CombatStore }
 export const combatStore = new CombatStore()

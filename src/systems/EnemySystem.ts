@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import enemiesData from '../data/enemies.json'
 import type { CombatStats, CombatEntity, CombatAbility } from '../stores/CombatStore'
+import { lootEngine, LootGenerationConfig } from './LootEngine'
 
 export interface EnemyDefinition {
   id: string
@@ -131,16 +132,20 @@ class EnemySystem {
     // Apply some variance to stats (±10%)
     const varianceMultiplier = () => 0.9 + Math.random() * 0.2
 
+    // Apply variance to max values, then set current values to max for full health start
+    const variedMaxHp = Math.floor(definition.stats.maxHp * varianceMultiplier())
+    const variedMaxMp = Math.floor(definition.stats.maxMp * varianceMultiplier())
+
     const entity: CombatEntity = {
       id: definition.id,
       name: definition.name,
       stats: {
         ...definition.stats,
-        // Apply variance to make encounters more interesting
-        hp: Math.floor(definition.stats.hp * varianceMultiplier()),
-        maxHp: definition.stats.maxHp,
-        mp: Math.floor(definition.stats.mp * varianceMultiplier()),
-        maxMp: definition.stats.maxMp,
+        // Apply variance to max values and set current values to full
+        hp: variedMaxHp, // Start at full health
+        maxHp: variedMaxHp,
+        mp: variedMaxMp, // Start at full mana
+        maxMp: variedMaxMp,
         damage: Math.floor(definition.stats.damage * varianceMultiplier())
       },
       isBlocking: false,
@@ -208,44 +213,30 @@ class EnemySystem {
       .sort((a, b) => a - b)
   }
 
-  // Generate loot from enemy based on tier
-  generateEnemyLoot(enemyId: string): { gold: number, items: string[] } {
-    const definition = this.getEnemyDefinition(enemyId.split('_')[0]) // Remove instance suffix
+  // Generate loot from enemy based on tier using the new LootEngine
+  generateEnemyLoot(enemyId: string, playerLevel: number = 10): { gold: number, items: any[] } {
+    // Remove only numeric suffix (e.g., _0, _1) but keep the full enemy name
+    const cleanId = enemyId.replace(/_\d+$/, '')
+    const definition = this.getEnemyDefinition(cleanId)
     if (!definition) {
       return { gold: 0, items: [] }
     }
 
-    const tier = definition.tier
-    
-    // Generate gold based on tier
-    const goldRanges = {
-      1: { min: 2, max: 10 },
-      2: { min: 10, max: 30 },
-      3: { min: 50, max: 120 }
-    }
-    
-    const goldRange = goldRanges[tier as keyof typeof goldRanges] || goldRanges[1]
-    const gold = Math.floor(Math.random() * (goldRange.max - goldRange.min + 1)) + goldRange.min
-
-    // Generate items based on tier (placeholder implementation)
-    // This would be expanded with proper tier-based loot tables
-    const items: string[] = []
-    const dropChance = tier * 15 // Higher tier = higher chance
-    
-    if (Math.random() * 100 < dropChance) {
-      // Basic tier-based item drops
-      const tierItems = {
-        1: ['iron_ore', 'health_potion', 'leather_cap'],
-        2: ['steel_ingot', 'magic_crystal', 'mana_potion'],
-        3: ['dragon_scale', 'magic_crystal', 'flame_blade']
-      }
-      
-      const availableItems = tierItems[tier as keyof typeof tierItems] || tierItems[1]
-      const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)]
-      items.push(randomItem)
+    const config: LootGenerationConfig = {
+      enemyTier: definition.tier,
+      playerLevel,
+      dungeonType: 'standard' // Could be expanded for themed dungeons
     }
 
-    return { gold, items }
+    const lootResult = lootEngine.generateEnemyLoot(config)
+    
+    // Convert LootDrop items to the format expected by the combat system
+    const items = lootResult.items.map(drop => drop.item)
+
+    return { 
+      gold: lootResult.gold, 
+      items 
+    }
   }
 
   // Get enemy by ID

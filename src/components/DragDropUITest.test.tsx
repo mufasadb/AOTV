@@ -46,7 +46,6 @@ describe('Drag Drop UI Integration Test', () => {
     
     // Get initial state
     const warAxe = inventoryStore.inventory.find(i => i.name === 'War Axe')!
-    const ironSword = inventoryStore.inventory.find(i => i.name === 'Iron Sword')!
     
     
     // Step 1: Equip War Axe directly via store (simulating successful first drag)

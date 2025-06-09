@@ -19,8 +19,7 @@ const mockRareItem: Item = {
   rarity: 'rare',
   description: 'A powerful rare blade',
   icon: '/test-icon.png',
-  stats: { attack: 25 },
-  requirements: { level: 15 }
+  stats: { attack: 25 }
 }
 
 describe('Materials System Integration', () => {

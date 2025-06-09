@@ -3,7 +3,6 @@ import { Box } from '@mui/material'
 import { 
   DndContext, 
   DragOverlay, 
-  closestCenter,
   rectIntersection,
   PointerSensor,
   useSensor,
@@ -14,7 +13,7 @@ import type {
   DragEndEvent,
   DragOverEvent,
 } from '@dnd-kit/core'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { inventoryStore } from '../stores/InventoryStore'
 import type { InventoryItem } from '../stores/InventoryStore'
 import RpgItemSlot from './RpgItemSlot'
@@ -85,8 +84,6 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
     if (!over || !draggedItem) return
 
     // Add visual feedback for valid drop zones
-    const dropData = over.data.current
-    const isValidDrop = validateDropTarget(draggedItem.item, dropData)
     
     // You could add CSS classes here for visual feedback
   }
@@ -100,7 +97,7 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
       setDragPosition({ x: 0, y: 0 })
       
       // If this was an invalid drop, force remount the DndContext to reset everything
-      if (!over || !validateDropTarget(draggedItem?.item, over.data.current)) {
+      if (!over || !validateDropTarget(draggedItem?.item!, over.data.current)) {
         setTimeout(() => {
           setContextKey(prev => prev + 1)
         }, 50)

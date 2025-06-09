@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ThemeProvider } from '@mui/material/styles'
 import DeconstructionOverlay from './DeconstructionOverlay'
@@ -12,11 +12,10 @@ const mockMagicItem: Item = {
   name: 'Magic Sword',
   type: 'weapon',
   slotType: 'melee',
-  rarity: 'magic',
+  rarity: 'uncommon',
   description: 'A magical blade',
   icon: '/test-icon.png',
-  stats: { attack: 10 },
-  requirements: { level: 1 }
+  stats: { attack: 10 }
 }
 
 const mockRareItem: Item = {
@@ -27,31 +26,25 @@ const mockRareItem: Item = {
   rarity: 'rare',
   description: 'Powerful armor',
   icon: '/test-icon.png',
-  stats: { armor: 20 },
-  requirements: { level: 10 }
+  stats: { armor: 20 }
 }
 
 const mockCommonItem: Item = {
   id: 'test-common-helm',
   name: 'Common Helm',
   type: 'armor',
-  slotType: 'helmet',
+  slotType: 'head',
   rarity: 'common',
   description: 'Basic helm',
   icon: '/test-icon.png',
-  stats: { armor: 5 },
-  requirements: { level: 1 }
+  stats: { armor: 5 }
 }
 
 describe('DeconstructionOverlay', () => {
   beforeEach(() => {
-    // Reset inventory
-    inventoryStore.backpack = [
-      mockMagicItem,
-      mockRareItem,
-      mockCommonItem,
-      null, null, null // empty slots
-    ]
+    // Reset inventory by updating the inventory array
+    inventoryStore.inventory.length = 0
+    inventoryStore.inventory.push(mockMagicItem, mockRareItem, mockCommonItem)
   })
 
   const renderComponent = (open = true) => {

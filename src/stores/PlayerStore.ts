@@ -33,17 +33,17 @@ class PlayerStore {
 
   // Player current vitals
   vitals: PlayerVitals = {
-    hp: 85,
+    hp: 100,
     maxHp: 100,
-    mp: 25,
+    mp: 50,
     maxMp: 50,
-    es: 15,
-    maxEs: 20
+    es: 0,
+    maxEs: 0
   }
 
   // Base stats before equipment bonuses
   baseStats = {
-    maxHp: 100,
+    maxHp: 100, // Player starts with 100 base health
     maxMp: 50,
     maxEs: 0, // Only from gear
     armor: 0,
@@ -62,6 +62,8 @@ class PlayerStore {
 
   constructor() {
     makeAutoObservable(this)
+    // Ensure player starts with full vitals
+    this.fullHeal()
   }
 
   // Calculate total stat from base + equipment

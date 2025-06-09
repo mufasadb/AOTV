@@ -225,7 +225,6 @@ const CraftingBenchOverlay = observer(({ open, onClose }: CraftingBenchOverlayPr
               variant="primary"
               startIcon={<Build />}
               disabled={true} // Placeholder - would be enabled when items are placed
-              sx={{ px: 4, py: 1.5 }}
             >
               Forge Item
             </RpgButton>

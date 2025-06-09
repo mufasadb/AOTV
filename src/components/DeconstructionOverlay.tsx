@@ -258,11 +258,11 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
             }}>
               {inventoryStore.backpack
                 .filter(item => item && ['uncommon', 'rare', 'epic'].includes(item.rarity))
-                .map((item, index) => (
+                .map((item) => (
                   <EnhancedDraggableItem
                     key={item.id}
                     item={item}
-                    dragType="backpack"
+                    sourceType="inventory"
                   />
                 ))}
             </Box>

@@ -19,7 +19,7 @@ import {
   Visibility,
   ExpandMore
 } from '@mui/icons-material'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 import { getMedievalIcon } from '../utils/iconHelper'
 import { combatStore } from '../stores/CombatStore'
@@ -29,6 +29,7 @@ import RpgButton from './RpgButton'
 import FloatingDamage from './FloatingDamage'
 import CharacterDoll from './CharacterDoll'
 import EnhancedDragDrop from './EnhancedDragDrop'
+import RewardModal from './RewardModal'
 import { transitions, shake, glow } from '../theme/animations'
 
 
@@ -43,7 +44,7 @@ const EnemySlot = ({
   onSelect,
   animationState 
 }: { 
-  enemy?: import('../stores/CombatStore').CombatEntity, 
+  enemy: import('../stores/CombatStore').CombatEntity, 
   position: { x: number, y: number },
   isSelected: boolean,
   onSelect: () => void,
@@ -58,9 +59,7 @@ const EnemySlot = ({
     }
   }
 
-  const getEnemyImage = (name?: string) => {
-    if (!name) return null;
-    
+  const getEnemyImage = (name: string) => {
     // Map enemy names to appropriate medieval icons
     const enemyIconMap: { [key: string]: string } = {
       'Goblin Warrior': getMedievalIcon('goblin'),
@@ -75,7 +74,7 @@ const EnemySlot = ({
     const baseTransform = 'translate(-50%, -50%)'
     switch (animationState) {
       case 'hit':
-        return `${baseTransform} translateY(-15px)` // Bounce backward (up/away from player)
+        return `${baseTransform} translateY(-20px)` // Enemy rocks directly up when hit
       case 'attacking':
         return `${baseTransform} translateY(10px)` // Jut forward (down/towards player)
       default:
@@ -84,8 +83,6 @@ const EnemySlot = ({
   }
 
   const createEnemyTooltip = () => {
-    if (!enemy) return null
-
     // Calculate middle damage value
     const baseDamage = enemy.stats.damage
     const critMultiplier = enemy.stats.critMultiplier || 1.0
@@ -173,7 +170,7 @@ const EnemySlot = ({
 
   return (
     <Tooltip
-      title={enemy ? createEnemyTooltip() : ''}
+      title={createEnemyTooltip()}
       placement="right"
       arrow
       componentsProps={{
@@ -209,20 +206,19 @@ const EnemySlot = ({
           left: `${position.x}%`,
           top: `${position.y}%`,
           transform: getAnimationTransform(),
-          cursor: enemy ? 'pointer' : 'default',
+          cursor: 'pointer',
           transition: transitions.elastic,
           animation: animationState === 'hit' ? `${shake} 0.3s` : 'none',
-          '&:hover': enemy ? {
+          '&:hover': {
             filter: 'brightness(1.2)',
             transform: `${getAnimationTransform()} scale(1.05)`,
-          } : {},
+          },
         }}
-        onClick={enemy ? onSelect : undefined}
+        onClick={onSelect}
       >
-      {enemy ? (
         <Fade in={true} timeout={800}>
           <Box sx={{ textAlign: 'center' }}>
-          {/* Intent Indicator */}
+            {/* Intent Indicator */}
           <Box sx={{ mb: 1, height: 20 }}>
             {getIntentIcon(enemy.intent)}
           </Box>
@@ -269,81 +265,33 @@ const EnemySlot = ({
           </Box>
           </Box>
         </Fade>
-      ) : (
-        <Box
-          sx={{
-            width: 64,
-            height: 64,
-            border: '2px dashed',
-            borderColor: 'rgba(255,255,255,0.3)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '0.6rem',
-            color: 'text.disabled',
-          }}
-        >
-          Empty
-        </Box>
-      )}
       </Box>
     </Tooltip>
   )
 }
 
 const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
+  const combatLogRef = useRef<HTMLDivElement>(null)
+
   // Initialize combat if not already started
   useEffect(() => {
     if (!combatStore.isInCombat) {
+      // Ensure player starts with full vitals
+      playerStore.fullHeal()
+      
       // Use player stats from PlayerStore
       const playerStats = playerStore.combatStats
 
-      // Mock enemy data with proper stats
-      const enemyData = [
-        {
-          name: 'Goblin Warrior',
-          stats: {
-            hp: 45, maxHp: 60, mp: 10, maxMp: 10, es: 0, maxEs: 0,
-            armor: 5, fireRes: 0, lightningRes: 0, iceRes: 0, darkRes: 5,
-            dodge: 12, block: 0, critChance: 8, critMultiplier: 1.3,
-            damage: 12, damageType: 'physical' as const
-          }
-        },
-        {
-          name: 'Orc Berserker',
-          stats: {
-            hp: 80, maxHp: 120, mp: 5, maxMp: 5, es: 0, maxEs: 0,
-            armor: 8, fireRes: 5, lightningRes: 0, iceRes: 0, darkRes: 0,
-            dodge: 4, block: 0, critChance: 12, critMultiplier: 1.6,
-            damage: 22, damageType: 'physical' as const
-          }
-        },
-        {
-          name: 'Dark Mage',
-          stats: {
-            hp: 30, maxHp: 40, mp: 40, maxMp: 50, es: 20, maxEs: 25,
-            armor: 2, fireRes: 10, lightningRes: 15, iceRes: 5, darkRes: 25,
-            dodge: 15, block: 0, critChance: 10, critMultiplier: 1.4,
-            damage: 16, damageType: 'dark' as const
-          }
-        }
-      ]
-
-      combatStore.startCombat(playerStats, enemyData)
+      // Start the dungeon with generated enemies
+      combatStore.initializeDungeon(playerStats)
     }
   }, [])
 
   // Handle combat end states
   useEffect(() => {
     if (combatStore.turnPhase === 'victory') {
-      // Show reward modal after a delay
-      setTimeout(() => {
-        const result = combatStore.nextFight()
-        if (result === 'dungeon_complete') {
-          onNavigateToTown()
-        }
-      }, 2000)
+      // Don't auto-progress to next fight - let player see rewards first
+      // The reward modal will handle progression
     } else if (combatStore.turnPhase === 'defeat') {
       // Apply death penalty and return to town
       setTimeout(() => {
@@ -353,6 +301,24 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
       }, 2000)
     }
   }, [combatStore.turnPhase, onNavigateToTown])
+
+  // Auto-scroll combat log to bottom when new messages arrive
+  useEffect(() => {
+    if (combatLogRef.current) {
+      combatLogRef.current.scrollTop = combatLogRef.current.scrollHeight
+    }
+  }, [combatStore.combatLog.length])
+
+  // Sync player vitals from combat to PlayerStore
+  useEffect(() => {
+    if (combatStore.player) {
+      playerStore.updateVitals({
+        hp: combatStore.player.stats.hp,
+        mp: combatStore.player.stats.mp,
+        es: combatStore.player.stats.es
+      })
+    }
+  }, [combatStore.player?.stats.hp, combatStore.player?.stats.mp, combatStore.player?.stats.es])
   // Enemy positions (from player perspective - enemies are across from us)
   const enemyPositions = [
     { x: 30, y: 25 }, // Back left
@@ -395,21 +361,6 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
           }}
         />
 
-        {/* Arena Floor Pattern */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '10%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '70%',
-            height: '60%',
-            border: '2px solid rgba(139, 69, 19, 0.6)',
-            borderRadius: '50%',
-            background: 'radial-gradient(ellipse, rgba(139, 69, 19, 0.1) 0%, transparent 70%)',
-          }}
-        />
-
         {/* Enemy Area */}
         <Box
           sx={{
@@ -421,18 +372,18 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
             height: '50%',
           }}
         >
-          {enemyPositions.map((position, index) => {
-            // Map combat store enemies to positions
-            const enemy = combatStore.enemies[index]
+          {combatStore.enemies.map((enemy, index) => {
+            // Only show actual enemies, no empty slots
+            const position = enemyPositions[index]
             
             return (
               <EnemySlot
-                key={index}
+                key={enemy.id}
                 enemy={enemy}
                 position={position}
-                isSelected={enemy ? combatStore.selectedTargetId === enemy.id : false}
-                onSelect={() => enemy && combatStore.selectTarget(enemy.id)}
-                animationState={enemy ? combatStore.enemyAnimations[enemy.id] || 'idle' : 'idle'}
+                isSelected={combatStore.selectedTargetId === enemy.id}
+                onSelect={() => combatStore.selectTarget(enemy.id)}
+                animationState={combatStore.enemyAnimations[enemy.id] || 'idle'}
               />
             )
           })}
@@ -470,7 +421,12 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
               size="large"
               variant="primary"
               startIcon={<Attack />}
-              disabled={combatStore.turnPhase !== 'player' || !combatStore.selectedTargetId || combatStore.isProcessingTurn}
+              disabled={
+                combatStore.turnPhase !== 'player' || 
+                !combatStore.selectedTargetId || 
+                combatStore.isProcessingTurn ||
+                !combatStore.enemies.find(e => e.id === combatStore.selectedTargetId)?.stats.hp
+              }
               onClick={() => combatStore.playerAttack()}
             >
               Attack
@@ -585,15 +541,17 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
                 <Typography variant="subtitle2">Combat Log</Typography>
               </AccordionSummary>
               <AccordionDetails sx={{ pt: 0 }}>
-                <Box sx={{ 
-                  height: 120, 
-                  overflow: 'auto', 
-                  border: '1px solid', 
-                  borderColor: 'divider', 
-                  borderRadius: 1, 
-                  p: 1,
-                  backgroundColor: 'rgba(0,0,0,0.2)'
-                }}>
+                <Box 
+                  ref={combatLogRef}
+                  sx={{ 
+                    height: 120, 
+                    overflow: 'auto', 
+                    border: '1px solid', 
+                    borderColor: 'divider', 
+                    borderRadius: 1, 
+                    p: 1,
+                    backgroundColor: 'rgba(0,0,0,0.2)'
+                  }}>
                   {combatStore.combatLog.map((message, index) => (
                     <Typography 
                       key={index} 
@@ -616,6 +574,20 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
         </Card>
       </Box>
       </Box>
+
+      {/* Reward Modal */}
+      <RewardModal
+        open={combatStore.showRewardModal}
+        onClose={() => {
+          const result = combatStore.nextFight()
+          if (result === 'dungeon_complete') {
+            combatStore.closeRewardModal()
+            onNavigateToTown()
+          }
+          // If result is 'next_fight', modal will close automatically and combat continues
+        }}
+        rewards={combatStore.turnPhase === 'victory' && combatStore.currentFight <= combatStore.totalFights ? combatStore.fightRewards : combatStore.dungeonRewards}
+      />
     </EnhancedDragDrop>
   )
 })

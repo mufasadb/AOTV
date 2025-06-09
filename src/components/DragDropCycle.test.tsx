@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import { DndContext } from '@dnd-kit/core'
 import { inventoryStore } from '../stores/InventoryStore'
-import EnhancedDragDrop from './EnhancedDragDrop'
 import TownView from './TownView'
 
 // Mock navigation function

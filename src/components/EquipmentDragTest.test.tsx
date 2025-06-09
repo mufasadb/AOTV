@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { inventoryStore } from '../stores/InventoryStore'
 import { itemSystem } from '../systems/ItemSystem'
 

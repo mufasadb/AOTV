@@ -75,6 +75,20 @@ class InventoryStore {
       const chestItem = this.inventory.find(item => item.name === 'Chain Mail')
       const shieldItem = this.inventory.find(item => item.name === 'Wooden Shield')
 
+      // Add 5 life to all non-weapon items before equipping
+      if (helmetItem) {
+        if (!helmetItem.stats) helmetItem.stats = {}
+        helmetItem.stats.maxHp = (helmetItem.stats.maxHp || 0) + 5
+      }
+      if (chestItem) {
+        if (!chestItem.stats) chestItem.stats = {}
+        chestItem.stats.maxHp = (chestItem.stats.maxHp || 0) + 5
+      }
+      if (shieldItem) {
+        if (!shieldItem.stats) shieldItem.stats = {}
+        shieldItem.stats.maxHp = (shieldItem.stats.maxHp || 0) + 5
+      }
+
       if (swordItem) this.equipItem(swordItem.id)
       if (helmetItem) this.equipItem(helmetItem.id)
       if (chestItem) this.equipItem(chestItem.id)

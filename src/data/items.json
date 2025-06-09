@@ -136,7 +136,7 @@
       "slotType": "head",
       "rarity": "common",
       "description": "Simple leather headgear offering basic protection",
-      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Helm_12_broken.png",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Helm_13.png",
       "stats": {
         "armor": 2,
         "dodge": 2
@@ -149,7 +149,7 @@
       "slotType": "head",
       "rarity": "uncommon",
       "description": "Solid iron helmet with nose guard protection",
-      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Helm_15.png",
+      "icon": "/5000FantasyIcons/ArmorIcons/BasicArmor_Icons/Helm_16.png",
       "stats": {
         "armor": 8,
         "fireResistance": 5
@@ -256,7 +256,7 @@
       "type": "consumable",
       "rarity": "common",
       "description": "Restores 50 health points when consumed",
-      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_15.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_15_reactive_potion.png",
       "stackSize": 10,
       "effects": {
         "healAmount": 50
@@ -268,7 +268,7 @@
       "type": "consumable",
       "rarity": "common",
       "description": "Restores 30 mana points when consumed",
-      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_25.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_25_stamina_potion.png",
       "stackSize": 10,
       "effects": {
         "manaAmount": 30
@@ -280,7 +280,7 @@
       "type": "consumable",
       "rarity": "uncommon",
       "description": "Temporarily increases attack damage by 25% for 5 minutes",
-      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_35.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_35_invisibility_flask.png",
       "stackSize": 5,
       "effects": {
         "attackBonus": 25,
@@ -293,7 +293,7 @@
       "type": "consumable",
       "rarity": "rare",
       "description": "Grants 40 points of energy shield protection",
-      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_45.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/ProfessionAndCraftIcons/Alchemy/Alchemy_45_middle_flask.png",
       "stackSize": 5,
       "effects": {
         "shieldAmount": 40
@@ -307,7 +307,7 @@
       "type": "material",
       "rarity": "common",
       "description": "Raw iron ore suitable for smelting into ingots",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_25.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_52_metal.png",
       "stackSize": 50,
       "craftingValue": 5
     },
@@ -317,7 +317,7 @@
       "type": "material",
       "rarity": "uncommon",
       "description": "Refined steel ready for crafting superior weapons",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_35.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_82_runestone.png",
       "stackSize": 25,
       "craftingValue": 15
     },
@@ -327,7 +327,7 @@
       "type": "material",
       "rarity": "rare",
       "description": "Crystallized magical energy used in enchanting",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_65.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/WaterCrystal.png",
       "stackSize": 10,
       "enchantingValue": 25
     },
@@ -337,7 +337,7 @@
       "type": "material",
       "rarity": "epic",
       "description": "Incredibly rare scale from an ancient dragon",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_85.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_180_deadstone.png",
       "stackSize": 5,
       "craftingValue": 100,
       "enchantingValue": 75
@@ -370,7 +370,7 @@
       "type": "key",
       "rarity": "rare",
       "description": "Opens special ice dungeon chambers",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_95.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_54_key.png",
       "stackSize": 1,
       "dungeonType": "ice"
     },
@@ -380,7 +380,7 @@
       "type": "key",
       "rarity": "rare",
       "description": "Opens special volcanic dungeon chambers",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_105.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_55_key.png",
       "stackSize": 1,
       "dungeonType": "fire"
     },
@@ -390,7 +390,7 @@
       "type": "key",
       "rarity": "rare",
       "description": "Opens special forest dungeon chambers",
-      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_115.png",
+      "icon": "/5000FantasyIcons/ProfessionIcons/LootIcons/Loot_56_key.png",
       "stackSize": 1,
       "dungeonType": "nature"
     }
