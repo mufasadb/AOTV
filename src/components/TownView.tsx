@@ -354,7 +354,14 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                   component="img"
                   src={getProfessionIcon('enchantment', 11)}
                   alt="deconstruction"
-                  sx={{ width: 48, height: 48, mb: 2, objectFit: 'contain' }}
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    mb: 2, 
+                    objectFit: 'contain',
+                    display: 'block',
+                    margin: '0 auto 16px auto'
+                  }}
                 />
                 <Typography variant="h6" gutterBottom>Deconstruction</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

@@ -8,13 +8,11 @@ import { gameStore } from './stores/GameStore'
 import { darkTheme, lightTheme } from './theme'
 import TownView from './components/TownView'
 import CombatView from './components/CombatView'
-import RewardModal from './components/RewardModal'
 import PlayerStatsBar from './components/PlayerStatsBar'
 
 const App = observer(() => {
   const currentTheme = gameStore.isDarkMode ? darkTheme : lightTheme
   const [currentView, setCurrentView] = useState(0)
-  const [showRewardModal, setShowRewardModal] = useState(false)
   
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setCurrentView(newValue)
@@ -181,22 +179,6 @@ const App = observer(() => {
           {renderCurrentView()}
         </Box>
 
-        {/* Demo button to show RewardModal */}
-        <Box sx={{ position: 'fixed', bottom: 16, right: 16 }}>
-          <Button 
-            variant="outlined" 
-            onClick={() => setShowRewardModal(true)}
-            size="small"
-          >
-            Demo Reward Modal
-          </Button>
-        </Box>
-
-        {/* Reward Modal */}
-        <RewardModal 
-          open={showRewardModal} 
-          onClose={() => setShowRewardModal(false)} 
-        />
       </Box>
     </ThemeProvider>
   )

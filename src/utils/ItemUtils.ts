@@ -326,7 +326,7 @@ export function canEquipToSlot(item: BaseItem, slot: EquipmentSlot): boolean {
   return isEquipmentItem(item) && item.slotType === slot
 }
 
-export function meetsRequirements(item: EquipmentItem, playerLevel: number, playerStats?: any): boolean {
+export function meetsRequirements(item: EquipmentItem, playerLevel: number, _playerStats?: any): boolean {
   if (!item.requirements) return true
   
   if (item.requirements.level && playerLevel < item.requirements.level) {
@@ -389,7 +389,7 @@ export function formatItemName(item: BaseItem): string {
 // =====================================
 
 // Convert old Item interface to new system (for migration)
-export function convertLegacyItem(legacyItem: any): AnyItem {
+export function convertLegacyItem(_legacyItem: any): AnyItem {
   // This would be used during migration to convert existing items
   // to the new type system - implementation depends on current item structure
   throw new Error('Legacy item conversion not yet implemented')

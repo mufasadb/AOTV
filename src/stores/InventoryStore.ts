@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { itemSystem } from '../systems/ItemSystem'
+import { playSounds } from '../utils/soundHelper'
 
 export interface Item {
   id: string
@@ -130,11 +131,13 @@ class InventoryStore {
       const currentItem = this.equipped[item.slotType]
       if (currentItem) {
         this.inventory.push(currentItem)
+        playSounds.clothUnequip() // Sound for unequipping
       }
       
       // Equip new item
       this.equipped[item.slotType] = item
       this.inventory = this.inventory.filter(item => item.id !== itemId)
+      playSounds.clothEquip() // Sound for equipping
     }
   }
 
@@ -144,7 +147,27 @@ class InventoryStore {
     if (item) {
       this.equipped[slotType] = null
       this.inventory.push(item)
+      playSounds.clothUnequip() // Sound for unequipping
     }
+  }
+
+  // Add item to inventory
+  addItem(item: Item) {
+    console.log('📦 INVENTORY: Adding item to inventory:', item.name)
+    this.inventory.push(item)
+  }
+
+  // Add multiple items to inventory
+  addItems(items: Item[]) {
+    console.log('📦 INVENTORY: Adding multiple items to inventory:', items.map(i => i.name))
+    this.inventory.push(...items)
+    
+    // Play item pickup sound for each item (with slight delay)
+    items.forEach((_, index) => {
+      setTimeout(() => {
+        playSounds.itemPickup()
+      }, index * 150) // 150ms delay between each item sound
+    })
   }
 
   // Remove item from inventory by item object
@@ -158,6 +181,7 @@ class InventoryStore {
     if (item) {
       this.equipped[slotType] = null
       this.stash.push(item)
+      playSounds.clothUnequip() // Sound for unequipping
     }
   }
 

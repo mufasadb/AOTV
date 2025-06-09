@@ -1,8 +1,5 @@
 import { observer } from 'mobx-react-lite'
 import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
   Box, 
   Typography, 
   IconButton,
@@ -40,39 +37,51 @@ const CraftingBenchOverlay = observer(({ open, onClose }: CraftingBenchOverlayPr
     },
   })
 
+  if (!open) return null
+
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          backgroundImage: `url(${getRpgFrame('Paper_01.png')})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          minHeight: '600px',
-        }
+    <Paper
+      sx={{
+        position: 'fixed',
+        top: 80,
+        right: 20,
+        width: 500,
+        height: 'calc(100vh - 120px)',
+        zIndex: 1200,
+        borderRadius: 2,
+        border: '2px solid',
+        borderColor: 'primary.main',
+        backgroundColor: 'background.paper',
+        backgroundImage: `url(${getRpgFrame('Paper_01.png')})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        overflow: 'auto',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.6)'
       }}
     >
-      <DialogTitle sx={{ 
+      <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
         fontFamily: 'Cinzel, serif',
         fontSize: '1.5rem',
         color: '#8B4513',
+        p: 2,
+        borderBottom: '1px solid',
+        borderColor: 'divider'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Build sx={{ fontSize: '2rem' }} />
-          Blacksmith's Forge
+          <Typography variant="h5" sx={{ fontFamily: 'Cinzel, serif', color: '#8B4513' }}>
+            Blacksmith's Forge
+          </Typography>
         </Box>
         <IconButton onClick={onClose}>
           <Close />
         </IconButton>
-      </DialogTitle>
+      </Box>
       
-      <DialogContent sx={{ p: 3 }}>
+      <Box sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
           
           {/* Crafting Instructions */}
@@ -247,8 +256,8 @@ const CraftingBenchOverlay = observer(({ open, onClose }: CraftingBenchOverlayPr
             </Typography>
           </Paper>
         </Box>
-      </DialogContent>
-    </Dialog>
+      </Box>
+    </Paper>
   )
 })
 

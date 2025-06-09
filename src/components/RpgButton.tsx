@@ -3,6 +3,7 @@ import { getRpgFrame } from '../utils/iconHelper'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { transitions } from '../theme/animations'
+import { playSounds } from '../utils/soundHelper'
 
 interface RpgButtonProps {
   children: ReactNode
@@ -77,7 +78,10 @@ const RpgButton = ({
 
   const handleMouseUp = () => {
     setIsPressed(false)
-    if (!disabled && onClick) onClick()
+    if (!disabled && onClick) {
+      playSounds.click()
+      onClick()
+    }
   }
 
   const handleMouseLeave = () => {
@@ -109,7 +113,12 @@ const RpgButton = ({
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      onMouseEnter={() => !disabled && setIsHovered(true)}
+      onMouseEnter={() => {
+        if (!disabled) {
+          setIsHovered(true)
+          playSounds.hover()
+        }
+      }}
     >
       {/* Button background image */}
       <Box

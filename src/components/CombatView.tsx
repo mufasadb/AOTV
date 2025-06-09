@@ -24,13 +24,15 @@ import { observer } from 'mobx-react-lite'
 import { getMedievalIcon } from '../utils/iconHelper'
 import { combatStore } from '../stores/CombatStore'
 import { playerStore } from '../stores/PlayerStore'
+import { inventoryStore } from '../stores/InventoryStore'
 import RpgProgressBar from './RpgProgressBar'
 import RpgButton from './RpgButton'
 import FloatingDamage from './FloatingDamage'
 import CharacterDoll from './CharacterDoll'
+import EnhancedDraggableItem from './EnhancedDraggableItem'
 import EnhancedDragDrop from './EnhancedDragDrop'
 import RewardModal from './RewardModal'
-import { transitions, shake, glow } from '../theme/animations'
+import { transitions, glow } from '../theme/animations'
 
 
 interface CombatViewProps {
@@ -74,7 +76,7 @@ const EnemySlot = ({
     const baseTransform = 'translate(-50%, -50%)'
     switch (animationState) {
       case 'hit':
-        return `${baseTransform} translateY(-20px)` // Enemy rocks directly up when hit
+        return `${baseTransform} translateY(-8px)` // Small upward movement when hit
       case 'attacking':
         return `${baseTransform} translateY(10px)` // Jut forward (down/towards player)
       default:
@@ -208,7 +210,6 @@ const EnemySlot = ({
           transform: getAnimationTransform(),
           cursor: 'pointer',
           transition: transitions.elastic,
-          animation: animationState === 'hit' ? `${shake} 0.3s` : 'none',
           '&:hover': {
             filter: 'brightness(1.2)',
             transform: `${getAnimationTransform()} scale(1.05)`,
@@ -272,6 +273,28 @@ const EnemySlot = ({
 
 const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
   const combatLogRef = useRef<HTMLDivElement>(null)
+  
+  // Track attack button state for debugging
+  const isAttackButtonDisabled = 
+    combatStore.turnPhase !== 'player' || 
+    !combatStore.selectedTargetId || 
+    combatStore.isProcessingTurn ||
+    !combatStore.enemies.find(e => e.id === combatStore.selectedTargetId)?.stats.hp
+
+  // Log attack button state changes
+  useEffect(() => {
+    const reasons = []
+    if (combatStore.turnPhase !== 'player') reasons.push(`turnPhase=${combatStore.turnPhase}`)
+    if (!combatStore.selectedTargetId) reasons.push('no_target_selected')
+    if (combatStore.isProcessingTurn) reasons.push('processing_turn')
+    if (!combatStore.enemies.find(e => e.id === combatStore.selectedTargetId)?.stats.hp) reasons.push('target_dead')
+    
+    if (isAttackButtonDisabled) {
+      console.log('🚫 BUTTON: Attack button DISABLED - Reasons:', reasons.join(', '))
+    } else {
+      console.log('✅ BUTTON: Attack button ENABLED - All conditions met')
+    }
+  }, [isAttackButtonDisabled, combatStore.turnPhase, combatStore.selectedTargetId, combatStore.isProcessingTurn, combatStore.enemies])
 
   // Initialize combat if not already started
   useEffect(() => {
@@ -421,12 +444,7 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
               size="large"
               variant="primary"
               startIcon={<Attack />}
-              disabled={
-                combatStore.turnPhase !== 'player' || 
-                !combatStore.selectedTargetId || 
-                combatStore.isProcessingTurn ||
-                !combatStore.enemies.find(e => e.id === combatStore.selectedTargetId)?.stats.hp
-              }
+              disabled={isAttackButtonDisabled}
               onClick={() => combatStore.playerAttack()}
             >
               Attack
@@ -469,37 +487,151 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
       </Box>
 
       {/* Player Equipment & Info Sidebar */}
-      <Box sx={{ width: 320, borderLeft: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ width: 640, borderLeft: '1px solid', borderColor: 'divider' }}>
         <Card sx={{ height: '100%', borderRadius: 0, border: 'none' }}>
           <CardContent sx={{ p: 2, height: '100%', overflow: 'auto' }}>
             <Typography variant="h6" gutterBottom>Player Status</Typography>
             
-            {/* Player Health/Mana/ES */}
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ mb: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>Health</Typography>
-                <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
-                  {playerStore.vitals.hp}/{playerStore.calculateTotalStat('maxHp')}
-                </Typography>
+            {/* Player Vitals with Progress Bars */}
+            <Box sx={{ 
+              mb: 3, 
+              p: 2, 
+              border: '2px solid',
+              borderColor: 'primary.main',
+              borderRadius: 2,
+              backgroundColor: 'rgba(45, 27, 14, 0.3)'
+            }}>
+              <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                Player Vitals
+              </Typography>
+              
+              {/* Health */}
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                  <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#dc2626' }}>
+                    Health
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                    {playerStore.vitals.hp}/{playerStore.calculateTotalStat('maxHp')}
+                  </Typography>
+                </Box>
+                <RpgProgressBar
+                  value={playerStore.vitals.hp}
+                  maxValue={playerStore.calculateTotalStat('maxHp')}
+                  type="health"
+                  width={280}
+                  height={16}
+                />
               </Box>
-              <Box sx={{ mb: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>Mana</Typography>
-                <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
-                  {playerStore.vitals.mp}/{playerStore.calculateTotalStat('maxMp')}
-                </Typography>
+
+              {/* Mana */}
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                  <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#2563eb' }}>
+                    Mana
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                    {playerStore.vitals.mp}/{playerStore.calculateTotalStat('maxMp')}
+                  </Typography>
+                </Box>
+                <RpgProgressBar
+                  value={playerStore.vitals.mp}
+                  maxValue={playerStore.calculateTotalStat('maxMp')}
+                  type="mana"
+                  width={280}
+                  height={16}
+                />
               </Box>
+
+              {/* Energy Shield */}
               <Box sx={{ mb: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>Energy Shield</Typography>
-                <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
-                  {playerStore.vitals.es}/{playerStore.calculateTotalStat('maxEs')}
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                  <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#7c3aed' }}>
+                    Energy Shield
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                    {playerStore.vitals.es}/{playerStore.calculateTotalStat('maxEs')}
+                  </Typography>
+                </Box>
+                <RpgProgressBar
+                  value={playerStore.vitals.es}
+                  maxValue={playerStore.calculateTotalStat('maxEs')}
+                  type="energy"
+                  width={280}
+                  height={16}
+                />
               </Box>
             </Box>
             
             {/* Character Equipment - Always Visible */}
-            <Box sx={{ mb: 2 }}>
+            <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" gutterBottom>Equipment</Typography>
               <CharacterDoll />
+            </Box>
+
+            {/* Player Inventory - 2 Column Layout */}
+            <Box sx={{ 
+              mb: 3,
+              p: 2,
+              border: '2px solid',
+              borderColor: 'primary.main',
+              borderRadius: 2,
+              backgroundColor: 'rgba(45, 27, 14, 0.3)'
+            }}>
+              <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                Inventory ({inventoryStore.inventory.length} items)
+              </Typography>
+              
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 1,
+                maxHeight: 300,
+                overflow: 'auto'
+              }}>
+                {inventoryStore.inventory.map((item, index) => (
+                  <Box
+                    key={`combat-inventory-${item.id}-${index}`}
+                    sx={{
+                      border: '1px solid rgba(139, 69, 19, 0.3)',
+                      borderRadius: 1,
+                      p: 0.5,
+                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)'
+                      }
+                    }}
+                  >
+                    <EnhancedDraggableItem
+                      item={item}
+                      sourceIndex={index}
+                      sourceType="inventory"
+                    />
+                  </Box>
+                ))}
+                
+                {/* Empty slots to show grid structure */}
+                {Array.from({ length: Math.max(0, 6 - inventoryStore.inventory.length) }, (_, index) => (
+                  <Box
+                    key={`empty-slot-${index}`}
+                    sx={{
+                      border: '1px dashed rgba(139, 69, 19, 0.3)',
+                      borderRadius: 1,
+                      p: 1,
+                      height: 64,
+                      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: 'text.secondary', opacity: 0.5 }}>
+                      Empty
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
 
             {/* Combat Stats - Collapsible */}
@@ -587,6 +719,7 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
           // If result is 'next_fight', modal will close automatically and combat continues
         }}
         rewards={combatStore.turnPhase === 'victory' && combatStore.currentFight <= combatStore.totalFights ? combatStore.fightRewards : combatStore.dungeonRewards}
+        isDungeonComplete={combatStore.currentFight > combatStore.totalFights}
       />
     </EnhancedDragDrop>
   )

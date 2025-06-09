@@ -158,6 +158,16 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
         // General equipment area - check if item is equippable
         return !!item.slotType
 
+      case 'deconstruction-slot':
+        // Deconstruction only accepts magic or higher rarity items
+        return item.rarity !== 'common'
+
+      case 'crafting-anvil':
+      case 'crafting-tool':
+      case 'crafting-materials':
+        // Crafting accepts appropriate items (placeholder for now)
+        return true
+
       default:
         return false
     }
@@ -212,6 +222,20 @@ const EnhancedDragDrop = observer(({ children }: EnhancedDragDropProps) => {
             inventoryStore.equipped[targetSlot] = item
           }
         }
+        break
+
+      case 'deconstruction-slot':
+        // Call the deconstruction handler if available
+        if (dropData.onDrop) {
+          dropData.onDrop(item)
+        }
+        break
+
+      case 'crafting-anvil':
+      case 'crafting-tool': 
+      case 'crafting-materials':
+        // TODO: Implement crafting handlers
+        console.log(`Dropped ${item.name} on ${targetType}`)
         break
     }
   }

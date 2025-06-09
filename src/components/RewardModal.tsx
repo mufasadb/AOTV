@@ -23,9 +23,10 @@ interface RewardModalProps {
   open: boolean
   onClose: () => void
   rewards?: DungeonRewards
+  isDungeonComplete?: boolean // New prop to differentiate between fight rewards and dungeon complete
 }
 
-const RewardModal = ({ open, onClose, rewards }: RewardModalProps) => {
+const RewardModal = ({ open, onClose, rewards, isDungeonComplete = false }: RewardModalProps) => {
   const defaultRewards: DungeonRewards = {
     gold: 0,
     items: [],
@@ -50,7 +51,7 @@ const RewardModal = ({ open, onClose, rewards }: RewardModalProps) => {
     >
       <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
         <Typography variant="h4" component="div" color="success.main">
-          Victory!
+          {isDungeonComplete ? 'Dungeon Complete!' : 'Fight Won!'}
         </Typography>
       </DialogTitle>
       
@@ -162,7 +163,9 @@ const RewardModal = ({ open, onClose, rewards }: RewardModalProps) => {
         )}
         
         <Typography variant="caption" display="block" sx={{ mt: 2, textAlign: 'center' }}>
-          These items have been added to your backpack
+          {isDungeonComplete 
+            ? 'These items have been added to your backpack' 
+            : 'Items added to backpack • Get ready for the next fight!'}
         </Typography>
       </DialogContent>
       
@@ -173,7 +176,7 @@ const RewardModal = ({ open, onClose, rewards }: RewardModalProps) => {
           onClick={onClose}
           sx={{ px: 4 }}
         >
-          Return to Town
+          {isDungeonComplete ? 'Return to Town' : 'Continue Fighting'}
         </Button>
       </DialogActions>
     </Dialog>

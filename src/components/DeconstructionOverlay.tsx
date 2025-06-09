@@ -1,7 +1,4 @@
 import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
   Box, 
   Typography,
   Button,
@@ -12,6 +9,7 @@ import {
 import { Close, Build, ArrowDownward } from '@mui/icons-material'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { useDroppable } from '@dnd-kit/core'
 import { inventoryStore } from '../stores/InventoryStore'
 import { materialsStore } from '../stores/MaterialsStore'
 import type { Item } from '../stores/InventoryStore'
@@ -27,6 +25,16 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [isBreakingDown, setIsBreakingDown] = useState(false)
   const [breakdownResults, setBreakdownResults] = useState<{ material: string, quantity: number }[]>([])
+  
+  const { setNodeRef: setDeconstructRef, isOver: isDeconstructOver } = useDroppable({
+    id: 'deconstruction-slot',
+    data: {
+      type: 'deconstruction-slot',
+      onDrop: (item: Item) => {
+        handleItemDrop(item)
+      }
+    },
+  })
 
   const handleItemDrop = (item: Item) => {
     // Only allow magic or rare items to be broken down
@@ -105,20 +113,33 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
     }
   }
 
+  if (!open) return null
+
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      maxWidth="sm" 
-      fullWidth
-      PaperProps={{
-        sx: {
-          bgcolor: 'background.paper',
-          backgroundImage: 'none'
-        }
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 80,
+        left: 20,
+        width: 400,
+        height: 'calc(100vh - 120px)',
+        zIndex: 1200,
+        bgcolor: 'background.paper',
+        border: '2px solid',
+        borderColor: 'primary.main',
+        borderRadius: 2,
+        overflow: 'auto',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.6)'
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        p: 2,
+        borderBottom: '1px solid',
+        borderColor: 'divider'
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Build />
           <Typography variant="h6">Item Deconstruction</Typography>
@@ -126,9 +147,9 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
         <IconButton onClick={onClose} size="small">
           <Close />
         </IconButton>
-      </DialogTitle>
+      </Box>
       
-      <DialogContent>
+      <Box sx={{ p: 2 }}>
         <Box sx={{ minHeight: 400, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Instructions */}
           <Typography variant="body2" color="text.secondary">
@@ -139,6 +160,7 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
             <Typography variant="subtitle2">Place Item to Deconstruct</Typography>
             <Box
+              ref={setDeconstructRef}
               sx={{
                 position: 'relative',
                 width: 120,
@@ -151,13 +173,13 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
               <RpgItemSlot
                 slotType="deconstruct"
                 item={selectedItem || undefined}
-                onDrop={handleItemDrop}
                 alt="deconstruct slot"
                 sx={{
                   width: 120,
                   height: 120,
-                  border: selectedItem ? `2px solid ${getRarityColor(selectedItem.rarity)}` : '2px dashed',
-                  borderColor: selectedItem ? undefined : 'divider',
+                  border: isDeconstructOver ? '3px solid #4ade80' : selectedItem ? `2px solid ${getRarityColor(selectedItem.rarity)}` : '2px dashed',
+                  borderColor: isDeconstructOver ? '#4ade80' : selectedItem ? undefined : 'divider',
+                  background: isDeconstructOver ? 'rgba(74, 222, 128, 0.1)' : 'transparent',
                   boxShadow: selectedItem ? `0 0 20px ${getRarityColor(selectedItem.rarity)}40` : 'none',
                   transition: 'all 0.3s ease'
                 }}
@@ -268,8 +290,8 @@ const DeconstructionOverlay = observer(({ open, onClose }: DeconstructionOverlay
             </Box>
           </Box>
         </Box>
-      </DialogContent>
-    </Dialog>
+      </Box>
+    </Box>
   )
 })
 

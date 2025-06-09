@@ -30,7 +30,8 @@
       "Bash(true)",
       "Bash(nc:*)",
       "Bash(rm:*)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(kill:*)"
     ],
     "deny": []
   }

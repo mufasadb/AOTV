@@ -110,8 +110,9 @@ const RpgItemSlot = ({
           alt={item.name}
           sx={{
             position: 'absolute',
-            top: '10%',
-            left: '10%',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             width: '80%',
             height: '80%',
             objectFit: 'contain',

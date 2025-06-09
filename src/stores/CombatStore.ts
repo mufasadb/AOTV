@@ -1,5 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { enemySystem } from '../systems/EnemySystem'
+import { inventoryStore } from './InventoryStore'
+import { playSounds } from '../utils/soundHelper'
 
 export type DamageType = 'physical' | 'fire' | 'lightning' | 'ice' | 'dark'
 
@@ -236,40 +238,56 @@ class CombatStore {
     const target = this.enemies.find(e => e.id === this.selectedTargetId)
     if (!target || target.stats.hp <= 0) return
     
+    console.log('🎯 COMBAT: Player attack initiated, setting isProcessingTurn=true (Attack button should become disabled)')
     this.isProcessingTurn = true
     
     const result = this.calculateDamage(this.player, target)
     
-    // Trigger enemy hit animation
+    // Play attack sound
+    playSounds.attack()
+    
+    // Trigger enemy hit animation (small upward movement)
     this.enemyAnimations[target.id] = 'hit'
     
     // Show floating damage
     this.showFloatingDamage(result, 'enemy', target.id)
     
+    console.log('⏳ COMBAT: Waiting for player damage to resolve (300ms delay)...')
     // Apply damage after a short delay for visual effect
     setTimeout(() => {
       this.applyDamage(target, result)
       this.addToCombatLog(`Player attacks ${target.name} for ${result.actualDamage} damage${result.wasCrit ? ' (CRIT!)' : ''}`)
       
-      // Return enemy to idle after animation and check for victory/target switching
+      // Play enemy hit sound (different sound for crits)
+      if (result.actualDamage > 0 && !result.wasDodged && !result.wasBlocked) {
+        playSounds.enemyHit(result.wasCrit)
+      }
+      
+      console.log('⏳ COMBAT: Player damage applied, waiting for animation to complete (600ms delay)...')
+      // Check for victory/target switching after damage
       setTimeout(() => {
+        // Return enemy to idle after animation
         this.enemyAnimations[target.id] = 'idle'
         
         // Check victory condition
         if (this.checkVictoryCondition()) {
+          console.log('🏆 COMBAT: Victory condition met, exiting player attack early')
           return // Victory handled, exit early
         }
         
-        // If current target died, select next valid target
+        // If current target died, play death sound and select next valid target
         if (target.stats.hp <= 0) {
+          playSounds.enemyDeath()
           this.selectNextValidTarget()
         }
         
+        console.log('✅ COMBAT: Player damage resolved, setting isProcessingTurn=false')
         this.isProcessingTurn = false
         
         // Only end player turn if there are still enemies alive
         const aliveEnemies = this.enemies.filter(e => e.stats.hp > 0)
         if (aliveEnemies.length > 0) {
+          console.log('🔄 COMBAT: Ending player turn, starting enemy phase')
           this.endPlayerTurn()
         }
       }, 600) // Time for return animation
@@ -292,6 +310,7 @@ class CombatStore {
 
   // End player turn and start enemy turns
   endPlayerTurn() {
+    console.log('⚔️ COMBAT: Starting enemy turn phase (Attack button should be disabled)')
     this.turnPhase = 'enemy'
     this.currentEnemyIndex = 0
     this.processEnemyTurns()
@@ -301,6 +320,7 @@ class CombatStore {
   processEnemyTurns() {
     if (!this.player) return
     
+    console.log('👹 COMBAT: Starting enemy turns sequence')
     this.processNextEnemyTurn()
   }
 
@@ -326,6 +346,11 @@ class CombatStore {
           if (this.player) {
             this.applyDamage(this.player, result)
             this.addToCombatLog(`${enemy.name} attacks for ${result.actualDamage} damage${result.wasCrit ? ' (CRIT!)' : ''}`)
+            
+            // Play player hit sound if damage was dealt (different sound for crits)
+            if (result.actualDamage > 0) {
+              playSounds.playerHit(result.wasCrit)
+            }
             
             // Return enemy to idle
             this.enemyAnimations[enemy.id] = 'idle'
@@ -356,14 +381,17 @@ class CombatStore {
     
     // All enemies have attacked, check victory condition
     if (this.checkVictoryCondition()) {
+      console.log('🏆 COMBAT: Victory after enemy turns, skipping turn reset')
       return // Victory handled
     }
     
+    console.log('🔄 COMBAT: All enemies finished attacking, resetting for next turn')
     // Reset for next turn
     this.startNewTurn()
   }
 
   startNewTurn() {
+    console.log('🔄 COMBAT: Starting new player turn (Attack button should become enabled)')
     this.turnPhase = 'player'
     this.currentEnemyIndex = 0
     
@@ -380,6 +408,8 @@ class CombatStore {
     
     // Auto-select first alive enemy if current target is dead or no target selected
     this.selectNextValidTarget()
+    
+    console.log('✅ COMBAT: New turn setup complete, turnPhase=player, isProcessingTurn=false')
   }
 
   // Damage calculation following GDD rules
@@ -560,6 +590,18 @@ class CombatStore {
     })
   }
   
+  // Add fight rewards to player's inventory
+  addRewardsToInventory() {
+    if (this.fightRewards.items.length > 0) {
+      console.log('💰 COMBAT: Adding fight rewards to inventory:', this.fightRewards.items.map((item: any) => item.name))
+      inventoryStore.addItems(this.fightRewards.items)
+    }
+    if (this.fightRewards.gold > 0) {
+      console.log('💰 COMBAT: Player would receive', this.fightRewards.gold, 'gold (gold system not implemented yet)')
+      // TODO: Add gold to player when gold system is implemented
+    }
+  }
+  
   // Check victory condition and handle fight completion
   checkVictoryCondition(): boolean {
     const aliveEnemies = this.enemies.filter(e => e.stats.hp > 0)
@@ -567,7 +609,18 @@ class CombatStore {
       // Collect loot from all defeated enemies in this fight
       this.collectFightRewards()
       
+      // Add items to player's inventory
+      this.addRewardsToInventory()
+      
+      // Play victory sounds
+      playSounds.victory()
+      if (this.fightRewards.items.length > 0) {
+        setTimeout(() => playSounds.loot(), 500) // Delayed loot sound
+      }
+      
+      console.log('🏆 COMBAT: Victory detected - resetting processing flag and showing rewards')
       this.turnPhase = 'victory'
+      this.isProcessingTurn = false // Reset processing flag on victory
       this.showRewardModal = true // Show rewards after each fight
       this.addToCombatLog('All enemies defeated!')
       return true
@@ -614,9 +667,13 @@ class CombatStore {
     // Use tier 1 by default for now, could be configurable based on dungeon type
     this.generateFightForTier(1)
     
+    console.log('🆕 COMBAT: Generating next fight - resetting turn state')
     this.turnPhase = 'player'
     this.currentEnemyIndex = 0
+    this.isProcessingTurn = false // CRITICAL: Reset processing flag for new fight
     this.selectedTargetId = this.enemies.length > 0 ? this.enemies[0].id : null
+    
+    console.log('✅ COMBAT: Next fight ready - turnPhase=player, isProcessingTurn=false, target selected')
   }
 
   endCombat() {
