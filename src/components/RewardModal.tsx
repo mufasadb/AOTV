@@ -8,8 +8,7 @@ import {
   Box,
   List,
   ListItem,
-  ListItemText,
-  Grid
+  ListItemText
 } from '@mui/material'
 import RpgItemSlot from './RpgItemSlot'
 import type { AnyItem } from '../types/ItemTypes'
@@ -87,42 +86,46 @@ const RewardModal = ({ open, onClose, rewards }: RewardModalProps) => {
               Items Found:
             </Typography>
             
-            {/* Display item objects with icons in a grid */}
-            <Grid container spacing={2} sx={{ mb: 2 }}>
+            {/* Display item objects with icons in a flex layout */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: 2, 
+              mb: 2,
+              justifyContent: 'center'
+            }}>
               {actualRewards.items
                 .filter(item => typeof item === 'object' && item !== null)
                 .map((item, index) => {
                   const itemObj = item as AnyItem
                   return (
-                    <Grid item key={index}>
-                      <Box sx={{ textAlign: 'center' }}>
-                        <RpgItemSlot
-                          item={{
-                            name: itemObj.name,
-                            icon: itemObj.icon,
-                            rarity: itemObj.type === 'equipment' ? itemObj.rarity : 'common'
-                          }}
-                          size={48}
-                          showTooltip={true}
-                        />
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            display: 'block', 
-                            mt: 0.5, 
-                            maxWidth: 60, 
-                            overflow: 'hidden', 
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {itemObj.name}
-                        </Typography>
-                      </Box>
-                    </Grid>
+                    <Box key={index} sx={{ textAlign: 'center', minWidth: 80 }}>
+                      <RpgItemSlot
+                        item={{
+                          name: itemObj.name,
+                          icon: itemObj.icon,
+                          rarity: itemObj.type === 'equipment' ? itemObj.rarity : 'common'
+                        }}
+                        size={48}
+                        showTooltip={true}
+                      />
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          display: 'block', 
+                          mt: 0.5, 
+                          maxWidth: 60, 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {itemObj.name}
+                      </Typography>
+                    </Box>
                   )
                 })}
-            </Grid>
+            </Box>
             
             {/* Fallback for string items (backward compatibility) */}
             {actualRewards.items.some(item => typeof item === 'string') && (

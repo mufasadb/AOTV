@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import enemiesData from '../data/enemies.json'
 import type { CombatStats, CombatEntity, CombatAbility } from '../stores/CombatStore'
-import { lootEngine, LootGenerationConfig } from './LootEngine'
+import { lootEngine, type LootGenerationConfig } from './LootEngine'
 
 export interface EnemyDefinition {
   id: string

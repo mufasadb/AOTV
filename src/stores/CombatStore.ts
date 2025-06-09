@@ -545,7 +545,7 @@ class CombatStore {
     this.fightRewards = { gold: 0, items: [] }
     
     // Estimate player level from their stats (temporary solution)
-    const playerLevel = this.player ? Math.max(1, Math.floor((this.player.stats.maxHp + this.player.stats.attack) / 10)) : 10
+    const playerLevel = this.player ? Math.max(1, Math.floor((this.player.stats.maxHp + this.player.stats.damage) / 10)) : 10
     
     this.enemies.forEach(enemy => {
       if (enemy.stats.hp <= 0) {

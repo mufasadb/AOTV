@@ -11,10 +11,9 @@ import type {
   PlayerStats,
   StatSource,
   CombatStats,
-  PlayerVitals,
-  DEFAULT_BASE_STATS,
-  createBaseStatSource
+  PlayerVitals
 } from '../types/PlayerStats'
+import { DEFAULT_BASE_STATS } from '../types/PlayerStats'
 import type { DamageType } from '../types/ItemTypes'
 
 export interface StatsUpdateEvent {

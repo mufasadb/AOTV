@@ -10,7 +10,6 @@ import type {
   EquipmentItem, 
   CraftingMaterialItem, 
   ItemLocation,
-  ItemRegistryEvent,
   ItemRegistryEventHandler
 } from '../types/ItemTypes'
 

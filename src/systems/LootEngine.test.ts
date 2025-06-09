@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { LootEngine, LootGenerationConfig } from './LootEngine'
-import { ItemRarity, EquipmentItem } from '../types/ItemTypes'
+import { LootEngine, type LootGenerationConfig } from './LootEngine'
+import type { ItemRarity, EquipmentItem } from '../types/ItemTypes'
 
 describe('LootEngine', () => {
   let lootEngine: LootEngine

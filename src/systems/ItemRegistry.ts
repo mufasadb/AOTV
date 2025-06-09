@@ -8,22 +8,12 @@
 
 import { makeAutoObservable } from 'mobx'
 import type {
-  BaseItem,
   AnyItem,
   ItemLocation,
-  EquipmentSlot
+  EquipmentSlot,
+  ItemRegistryEvent,
+  ItemRegistryEventHandler
 } from '../types/ItemTypes'
-
-// Event types for item registry notifications
-export interface ItemRegistryEvent {
-  type: 'item_created' | 'item_destroyed' | 'item_moved' | 'item_updated'
-  itemId: string
-  oldLocation?: ItemLocation
-  newLocation?: ItemLocation
-  item?: AnyItem
-}
-
-export type ItemRegistryEventHandler = (event: ItemRegistryEvent) => void
 
 /**
  * Central registry for all item instances in the game.
@@ -56,6 +46,7 @@ class ItemRegistry {
     this.notifyEventHandlers({
       type: 'item_created',
       itemId: item.id,
+      timestamp: Date.now(),
       newLocation: location,
       item
     })
@@ -76,6 +67,7 @@ class ItemRegistry {
     this.notifyEventHandlers({
       type: 'item_destroyed',
       itemId,
+      timestamp: Date.now(),
       oldLocation: location,
       item
     })
@@ -102,6 +94,7 @@ class ItemRegistry {
     this.notifyEventHandlers({
       type: 'item_updated',
       itemId,
+      timestamp: Date.now(),
       item
     })
 
@@ -154,6 +147,7 @@ class ItemRegistry {
     this.notifyEventHandlers({
       type: 'item_moved',
       itemId,
+      timestamp: Date.now(),
       oldLocation,
       newLocation,
       item
@@ -307,7 +301,7 @@ class ItemRegistry {
 
     // Check for duplicate locations (same exact location)
     const locationStrings = new Set<string>()
-    for (const [itemId, location] of this.locations.entries()) {
+    for (const [_itemId, location] of this.locations.entries()) {
       const locationStr = JSON.stringify(location)
       if (locationStrings.has(locationStr)) {
         errors.push(`Duplicate location found: ${locationStr}`)

@@ -1,4 +1,4 @@
-import { ItemRarity, EquipmentItem, AnyItem, ItemStats, AffixInstance } from '../types/ItemTypes'
+import type { ItemRarity, EquipmentItem, AnyItem, ItemStats, AffixInstance } from '../types/ItemTypes'
 import itemsData from '../data/items.json'
 import modifiersData from '../data/modifiers.json'
 
@@ -143,7 +143,7 @@ export class LootEngine {
    * Generate gold drops based on enemy tier
    */
   private generateGold(enemyTier: number): number {
-    const goldRanges = {
+    const goldRanges: { [key: number]: [number, number] } = {
       1: [2, 10],
       2: [10, 30], 
       3: [50, 120]
@@ -189,7 +189,7 @@ export class LootEngine {
       const reqLevel = item.requirements?.level || 1
       
       // Items should be appropriate for the tier range
-      const tierLevelRange = {
+      const tierLevelRange: { [key: number]: [number, number] } = {
         1: [1, 15],
         2: [10, 30],
         3: [25, 50]
@@ -243,7 +243,7 @@ export class LootEngine {
    */
   private calculateItemLevel(enemyTier: number, playerLevel: number): number {
     // Base item level from enemy tier
-    const baseLevels = { 1: 5, 2: 20, 3: 35 }
+    const baseLevels: { [key: number]: number } = { 1: 5, 2: 20, 3: 35 }
     const baseLevel = baseLevels[enemyTier] || 1
     
     // Add variance based on player level

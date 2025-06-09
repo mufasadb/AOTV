@@ -7,7 +7,12 @@
 2. **Review LOOT_SYSTEM_TODO.md** for current development priorities and detailed task requirements
 3. **Review IMPLEMENTATION-NOTES.md** for technical details, architecture decisions, and codebase specifics
 4. **Align all work** with the project's design principles
-5. **Confirm request is complete before considering complete** unless explicitly asked to turn the server off, ensure the dev server is running, and that it returns a response on localhost:5173 and that it has an expected response before considering something "complete" 
+5. **MANDATORY END-TO-END VERIFICATION** Before ANY task is considered complete:
+   - Ensure dev server is running on localhost:5173 (NOT 5174 or any other port)
+   - Verify the homepage loads without white screen or JavaScript errors  
+   - Run `npm run build` to check for TypeScript compilation errors
+   - Test that the app displays expected content, not error messages
+   - NEVER commit or declare work "done" without these verification steps 
 6. **Stay on task** Resist implementing code that strays from the given task. Don't leave TODO's for behaviour to do with this feature to implement later, implement things to completion
 7. **Use TDD** write tests to confirm behaviour both functional and actual user experience to confirm functionality works as intended. For each task, write a test to confirm its working, but also keep a list of required end to end testing to the main expected behaviour that's run before returning work to the user
 8. **Update IMPLEMENTATION-NOTES.md** whenever you discover new technical patterns, make architectural decisions, or implement significant features that future development should be aware of
@@ -34,11 +39,17 @@
 4. Keep the dev server running and verify changes at localhost:5173
 5. Update IMPLEMENTATION-NOTES.md with any new patterns or significant changes
 
-### After Completing Work
-1. Run all tests to ensure nothing is broken
-2. Verify the feature works as expected in the browser
-3. Update IMPLEMENTATION-NOTES.md if you've added new systems or patterns
-4. Confirm the dev server is still running and responsive
+### After Completing Work - MANDATORY VERIFICATION CHECKLIST
+☐ **TypeScript Compilation**: Run `npm run build` - must succeed without errors
+☐ **Dev Server**: Confirm running on localhost:5173 (correct port)  
+☐ **App Loading**: Visit localhost:5173 in browser - no white screen/JS errors
+☐ **Homepage Display**: Verify expected content loads (not error messages)
+☐ **Feature Testing**: Confirm implemented feature works as intended
+☐ **Test Suite**: Run `npm test` - all tests must pass
+☐ **Documentation**: Update IMPLEMENTATION-NOTES.md for significant changes
+☐ **Final Check**: App is responsive and functional before considering "complete"
+
+**CRITICAL**: If ANY checkbox fails, the task is NOT complete. Fix issues before proceeding.
 
 ## Testing Requirements
 

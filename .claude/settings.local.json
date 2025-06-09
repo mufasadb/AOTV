@@ -25,7 +25,12 @@
       "Bash(rg:*)",
       "Bash(grep:*)",
       "Bash(node test_enemies.js)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm run lint)",
+      "Bash(true)",
+      "Bash(nc:*)",
+      "Bash(rm:*)",
+      "WebFetch(domain:localhost)"
     ],
     "deny": []
   }

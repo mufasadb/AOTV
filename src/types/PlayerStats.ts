@@ -162,15 +162,17 @@ export const DEFAULT_BASE_STATS: PlayerStats = {
 }
 
 // Stat calculation mode
-export enum StatCalculationMode {
-  ADDITIVE = 'additive',       // Simple addition
-  MULTIPLICATIVE = 'multiplicative', // Percentage multiplier
-  MORE_MULTIPLIER = 'more',    // Multiplicative with other 'more' modifiers
-  INCREASED = 'increased',     // Additive with other 'increased' modifiers, then multiplicative
-  MAX = 'max',                // Take maximum value
-  MIN = 'min',                // Take minimum value
-  OVERRIDE = 'override'        // Override all other values
-}
+export const StatCalculationMode = {
+  ADDITIVE: 'additive',       // Simple addition
+  MULTIPLICATIVE: 'multiplicative', // Percentage multiplier
+  MORE_MULTIPLIER: 'more',    // Multiplicative with other 'more' modifiers
+  INCREASED: 'increased',     // Additive with other 'increased' modifiers, then multiplicative
+  MAX: 'max',                // Take maximum value
+  MIN: 'min',                // Take minimum value
+  OVERRIDE: 'override'        // Override all other values
+} as const
+
+export type StatCalculationMode = typeof StatCalculationMode[keyof typeof StatCalculationMode]
 
 // Enhanced stat source with calculation mode
 export interface EnhancedStatSource extends StatSource {
@@ -253,3 +255,14 @@ export function clampStatValue(statName: keyof PlayerStats, value: number): numb
   
   return value
 }
+
+// Event types for stats updates
+export interface StatsUpdateEvent {
+  type: 'stats_changed' | 'source_added' | 'source_removed'
+  statsChanged: (keyof PlayerStats)[]
+  oldStats: PlayerStats
+  newStats: PlayerStats
+  timestamp: number
+}
+
+export type StatsUpdateHandler = (event: StatsUpdateEvent) => void

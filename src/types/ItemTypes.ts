@@ -254,3 +254,16 @@ export function getMaxStackSize(item: BaseItem): number {
 export function getCurrentStackSize(item: BaseItem): number {
   return item.currentStack || 1
 }
+
+// Event system for ItemRegistry
+export interface ItemRegistryEvent {
+  type: 'item_created' | 'item_destroyed' | 'item_moved' | 'item_updated'
+  itemId: string
+  timestamp: number
+  oldLocation?: ItemLocation
+  newLocation?: ItemLocation
+  item?: AnyItem
+  data?: any
+}
+
+export type ItemRegistryEventHandler = (event: ItemRegistryEvent) => void
