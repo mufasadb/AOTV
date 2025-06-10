@@ -247,11 +247,43 @@ class PlayerStore {
   }
 
   private checkLevelUp() {
-    const expForNextLevel = this.playerInfo.level * 100 // Simple formula
-    if (this.playerInfo.experience >= expForNextLevel) {
+    const expRequiredForLevel = this.getExperienceRequiredForLevel(this.playerInfo.level + 1)
+    if (this.playerInfo.experience >= expRequiredForLevel) {
       this.playerInfo.level++
-      this.playerInfo.experience -= expForNextLevel
+      this.playerInfo.experience -= expRequiredForLevel
       this.onLevelUp()
+      
+      // Check again in case of multiple level ups
+      this.checkLevelUp()
+    }
+  }
+
+  // Exponential XP curve: each level requires significantly more XP
+  // Formula: baseXP * (level^2.2) - makes it progressively harder
+  getExperienceRequiredForLevel(level: number): number {
+    if (level <= 1) return 0
+    const baseXP = 100
+    return Math.floor(baseXP * Math.pow(level - 1, 2.2))
+  }
+
+  // Get total XP required to reach a specific level
+  getTotalExperienceForLevel(level: number): number {
+    let totalXP = 0
+    for (let i = 2; i <= level; i++) {
+      totalXP += this.getExperienceRequiredForLevel(i)
+    }
+    return totalXP
+  }
+
+  // Get XP progress for current level
+  getCurrentLevelProgress(): { current: number, required: number, percentage: number } {
+    const required = this.getExperienceRequiredForLevel(this.playerInfo.level + 1)
+    const percentage = required > 0 ? (this.playerInfo.experience / required) * 100 : 100
+    
+    return {
+      current: this.playerInfo.experience,
+      required,
+      percentage: Math.min(100, percentage)
     }
   }
 

@@ -561,6 +561,38 @@ const CombatView = observer(({ onNavigateToTown }: CombatViewProps) => {
                   height={16}
                 />
               </Box>
+
+              {/* Experience Progress */}
+              {(() => {
+                const progress = playerStore.getCurrentLevelProgress()
+                return (
+                  <Box sx={{ mb: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#d4af37' }}>
+                        Level {playerStore.playerInfo.level} XP
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        {progress.current}/{progress.required}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ 
+                      width: 280, 
+                      height: 16, 
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                      borderRadius: 1,
+                      border: '1px solid #d4af37',
+                      overflow: 'hidden'
+                    }}>
+                      <Box sx={{ 
+                        width: `${progress.percentage}%`, 
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #d4af37 0%, #f4e88a 50%, #d4af37 100%)',
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </Box>
+                  </Box>
+                )
+              })()}
             </Box>
             
             {/* Character Equipment - Always Visible */}

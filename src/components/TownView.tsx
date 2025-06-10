@@ -16,7 +16,9 @@ import {
   Assessment, 
   Build, 
   VpnKey,
-  Person
+  Person,
+  Settings,
+  Store
 } from '@mui/icons-material'
 import { useState } from 'react'
 import { observer } from 'mobx-react-lite'
@@ -30,6 +32,8 @@ import CharacterDoll from './CharacterDoll'
 import StashOverlay from './StashOverlay'
 import CraftingBenchOverlay from './CraftingBenchOverlay'
 import DeconstructionOverlay from './DeconstructionOverlay'
+import SettingsOverlay from './SettingsOverlay'
+import ShopOverlay from './ShopOverlay'
 import { transitions } from '../theme/animations'
 
 interface TownViewProps {
@@ -42,6 +46,8 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
   const [stashOpen, setStashOpen] = useState(false)
   const [craftingOpen, setCraftingOpen] = useState(false)
   const [deconstructOpen, setDeconstructOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [shopOpen, setShopOpen] = useState(false)
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -73,6 +79,51 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                 label={`${playerStore.playerInfo.name} (Level ${playerStore.playerInfo.level})`} 
                 sx={{ mb: 2 }}
               />
+            </Box>
+
+            {/* Experience Progress */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" gutterBottom>Experience Progress</Typography>
+              <Box sx={{ 
+                p: 2, 
+                border: '2px solid',
+                borderColor: 'primary.main',
+                borderRadius: 2,
+                backgroundColor: 'rgba(45, 27, 14, 0.3)'
+              }}>
+                {(() => {
+                  const progress = playerStore.getCurrentLevelProgress()
+                  return (
+                    <Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                          Level {playerStore.playerInfo.level}
+                        </Typography>
+                        <Typography variant="body2">
+                          {progress.current} / {progress.required} XP
+                        </Typography>
+                      </Box>
+                      <Box sx={{ 
+                        width: '100%', 
+                        height: 8, 
+                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                        borderRadius: 1,
+                        overflow: 'hidden'
+                      }}>
+                        <Box sx={{ 
+                          width: `${progress.percentage}%`, 
+                          height: '100%',
+                          backgroundColor: 'primary.main',
+                          transition: 'width 0.3s ease'
+                        }} />
+                      </Box>
+                      <Typography variant="caption" sx={{ mt: 0.5, display: 'block', textAlign: 'center' }}>
+                        {progress.percentage.toFixed(1)}% to next level
+                      </Typography>
+                    </Box>
+                  )
+                })()}
+              </Box>
             </Box>
             
             <Typography variant="subtitle2" gutterBottom>Vital Stats</Typography>
@@ -301,7 +352,7 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
             Adventurer's Haven
           </Typography>
           
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3, maxWidth: 1200, mx: 'auto' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(6, 1fr)' }, gap: 3, maxWidth: 1400, mx: 'auto' }}>
             {/* Stash */}
             <Card sx={{ 
               cursor: 'pointer', 
@@ -324,6 +375,29 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                 </Typography>
                 <RpgButton fullWidth onClick={() => setStashOpen(true)}>
                   Open Stash
+                </RpgButton>
+              </CardContent>
+            </Card>
+
+            {/* Shop */}
+            <Card sx={{ cursor: 'pointer', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-4px)' } }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Store 
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    mb: 2, 
+                    color: 'warning.main',
+                    display: 'block',
+                    margin: '0 auto 16px auto'
+                  }} 
+                />
+                <Typography variant="h6" gutterBottom>Trader's Shop</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Buy equipment, materials, and consumables from traveling merchants
+                </Typography>
+                <RpgButton fullWidth variant="secondary" onClick={() => setShopOpen(true)}>
+                  Browse Goods
                 </RpgButton>
               </CardContent>
             </Card>
@@ -391,6 +465,29 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
                 </RpgButton>
               </CardContent>
             </Card>
+
+            {/* Settings */}
+            <Card sx={{ cursor: 'pointer', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-4px)' } }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Settings 
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    mb: 2, 
+                    color: 'primary.main',
+                    display: 'block',
+                    margin: '0 auto 16px auto'
+                  }} 
+                />
+                <Typography variant="h6" gutterBottom>Settings</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Configure game options and audio settings
+                </Typography>
+                <RpgButton fullWidth onClick={() => setSettingsOpen(true)}>
+                  Open Settings
+                </RpgButton>
+              </CardContent>
+            </Card>
           </Box>
         </Box>
       </Box>
@@ -449,6 +546,12 @@ const TownView = observer(({ onNavigateToCombat }: TownViewProps) => {
       
       {/* Deconstruction Overlay */}
       <DeconstructionOverlay open={deconstructOpen} onClose={() => setDeconstructOpen(false)} />
+      
+      {/* Settings Overlay */}
+      <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      
+      {/* Shop Overlay */}
+      <ShopOverlay open={shopOpen} onClose={() => setShopOpen(false)} />
       </Box>
     </EnhancedDragDrop>
   )

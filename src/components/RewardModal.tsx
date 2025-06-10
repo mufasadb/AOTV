@@ -74,6 +74,22 @@ const RewardModal = ({ open, onClose, rewards, isDungeonComplete = false }: Rewa
           </Typography>
         </Box>
 
+        {/* Experience Reward */}
+        {actualRewards.experience && actualRewards.experience > 0 && (
+          <Box sx={{ 
+            border: '1px solid', 
+            borderColor: 'primary.main', 
+            borderRadius: 1, 
+            p: 2,
+            mb: 2,
+            backgroundColor: 'rgba(212, 175, 55, 0.1)'
+          }}>
+            <Typography variant="h6" sx={{ color: 'primary.main', textAlign: 'center' }}>
+              ⭐ {actualRewards.experience} Experience
+            </Typography>
+          </Box>
+        )}
+
         {/* Items Reward */}
         {actualRewards.items.length > 0 && (
           <Box sx={{ 

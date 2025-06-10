@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { enemySystem } from '../systems/EnemySystem'
 import { inventoryStore } from './InventoryStore'
+import { playerStore } from './PlayerStore'
 import { playSounds } from '../utils/soundHelper'
 
 export type DamageType = 'physical' | 'fire' | 'lightning' | 'ice' | 'dark'
@@ -92,7 +93,8 @@ class CombatStore {
   // Fight rewards tracking (for individual fights)
   fightRewards = {
     gold: 0,
-    items: [] as any[]
+    items: [] as any[],
+    experience: 0
   }
   showRewardModal = false
   
@@ -572,10 +574,11 @@ class CombatStore {
 
   // Collect rewards from defeated enemies in current fight
   collectFightRewards() {
-    this.fightRewards = { gold: 0, items: [] }
+    this.fightRewards = { gold: 0, items: [], experience: 0 }
     
-    // Estimate player level from their stats (temporary solution)
-    const playerLevel = this.player ? Math.max(1, Math.floor((this.player.stats.maxHp + this.player.stats.damage) / 10)) : 10
+    // Use actual player level from playerStore
+    const playerLevel = playerStore.playerInfo.level
+    let totalXPGained = 0
     
     this.enemies.forEach(enemy => {
       if (enemy.stats.hp <= 0) {
@@ -583,11 +586,42 @@ class CombatStore {
         this.fightRewards.gold += loot.gold
         this.fightRewards.items.push(...loot.items)
         
+        // Calculate XP reward based on enemy level (linear increase)
+        // Enemies are scaled to player level, so they give consistent XP
+        const enemyLevel = this.getEnemyLevel(enemy)
+        const baseXP = 25 // Base XP per enemy
+        const xpReward = baseXP + (enemyLevel * 10) // 10 XP per enemy level
+        totalXPGained += xpReward
+        
+        console.log(`💫 XP: Defeated ${enemy.name} (Level ${enemyLevel}) - Gained ${xpReward} XP`)
+        
         // Also add to dungeon total
         this.dungeonRewards.gold += loot.gold
         this.dungeonRewards.items.push(...loot.items)
       }
     })
+    
+    // Add XP to fight rewards and give to player
+    this.fightRewards.experience = totalXPGained
+    if (totalXPGained > 0) {
+      const oldLevel = playerStore.playerInfo.level
+      playerStore.gainExperience(totalXPGained)
+      const newLevel = playerStore.playerInfo.level
+      
+      if (newLevel > oldLevel) {
+        console.log(`🎉 LEVEL UP! ${oldLevel} → ${newLevel}`)
+        this.addToCombatLog(`LEVEL UP! You are now level ${newLevel}!`)
+        playSounds.victory() // Extra victory sound for level up
+      }
+    }
+  }
+
+  // Estimate enemy level based on their stats
+  private getEnemyLevel(enemy: CombatEntity): number {
+    // Simple estimation based on enemy HP and damage
+    // This can be improved when enemy system has explicit levels
+    const statTotal = enemy.stats.maxHp + enemy.stats.damage + enemy.stats.armor
+    return Math.max(1, Math.floor(statTotal / 15))
   }
   
   // Add fight rewards to player's inventory
@@ -597,8 +631,8 @@ class CombatStore {
       inventoryStore.addItems(this.fightRewards.items)
     }
     if (this.fightRewards.gold > 0) {
-      console.log('💰 COMBAT: Player would receive', this.fightRewards.gold, 'gold (gold system not implemented yet)')
-      // TODO: Add gold to player when gold system is implemented
+      console.log('💰 COMBAT: Player receives', this.fightRewards.gold, 'gold')
+      playerStore.addGold(this.fightRewards.gold)
     }
   }
   
@@ -690,7 +724,7 @@ class CombatStore {
     this.enemyAnimations = {}
     this.floatingDamages = []
     this.dungeonRewards = { gold: 0, items: [] }
-    this.fightRewards = { gold: 0, items: [] }
+    this.fightRewards = { gold: 0, items: [], experience: 0 }
     this.showRewardModal = false
   }
   
